@@ -1,6 +1,8 @@
+'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/configs/supabase'
+import { useRouter } from 'next/navigation'
 
 interface AuthContextType {
   user: User | null
@@ -15,18 +17,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session) {
+        router.push('/home')
+      } else {
+        router.push('/login')
+      }
+
       setLoading(false)
     })
 
     // Listen for changes on auth state (logged in, signed out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      if (session) {
+        router.push('/home')
+      } else {
+        router.push('/login')
+      }
       setLoading(false)
     })
 
@@ -67,4 +81,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
-} 
+}

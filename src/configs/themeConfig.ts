@@ -16,6 +16,9 @@
  * Another way is to clear the cookie from the browser's Application/Storage tab and then reload the page.
  */
 
+// Third-party Imports
+import type { ToastPosition } from 'react-toastify'
+
 // Type Imports
 import type { Mode, Skin, Layout, LayoutComponentPosition, LayoutComponentWidth } from '@core/types'
 
@@ -47,14 +50,15 @@ export type Config = {
   compactContentWidth: number
   footer: Footer
   disableRipple: boolean
+  toastPosition: ToastPosition
 }
 
 const themeConfig: Config = {
   templateName: 'sneat',
-  homePageUrl: '/home',
-  settingsCookieName: 'sneat-mui-next-demo-1',
-  mode: 'system', // 'system', 'light', 'dark'
-  skin: 'default', // 'default', 'bordered'
+  homePageUrl: '/dashboards/crm',
+  settingsCookieName: 'sneat-mui-next-demo-2',
+  mode: 'light', // 'system', 'light', 'dark'
+  skin: 'bordered', // 'default', 'bordered'
   semiDark: false, // true, false
   layout: 'vertical', // 'vertical', 'collapsed', 'horizontal'
   layoutPadding: 24, // Common padding for header, content, footer layout components (in px)
@@ -72,7 +76,8 @@ const themeConfig: Config = {
     contentWidth: 'compact', // 'compact', 'wide'
     detached: true //! true, false (This will not work in the Horizontal Layout)
   },
-  disableRipple: true // true, false
+  disableRipple: true, // true, false
+  toastPosition: 'top-right' // 'top-right', 'top-center', 'top-left', 'bottom-right', 'bottom-center', 'bottom-left'
 }
 
 export default themeConfig

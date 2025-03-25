@@ -7,6 +7,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@core/contexts/AuthContext'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -22,34 +23,36 @@ import Divider from '@mui/material/Divider'
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
-import { AuthProvider } from '@/utils/AuthContext'
-import { useAuth } from '@/utils/AuthContext'
-
-// Config Imports
-import themeConfig from '@configs/themeConfig'
 
 // Styled Component Imports
-import AuthIllustrationWrapper from './AuthIllustrationWrapper'
+import AuthIllustrationWrapper from '../AuthIllustrationWrapper'
 
-const Login = () => {
+const Register = () => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
 
-  const { signIn } = useAuth()
+  // Hooks
+  const { lang: locale } = useParams()
+  const { signUp } = useAuth()
   const router = useRouter()
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
-  const handleClickLogin = async (e: React.FormEvent) => {
+  const handleClickRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await signIn(email, password)
-      router.push('/home')
+      await signUp(email, password)
+      router.push('/login?message=Check your email to confirm your account')
     } catch (error) {
-      console.error('Error signing in:', error)
+      console.error('Error signing up:', error)
     }
+  }
+
+  const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value)
   }
 
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,21 +65,21 @@ const Login = () => {
 
   return (
     <AuthIllustrationWrapper>
-      <Card className='flex flex-col sm:is-[450px] ' >
-        <CardContent className='sm:!p-12'>
+      <Card className='flex flex-col sm:is-[450px]'>
+        <CardContent className='sm:!p-12' >
           <div className='flex justify-center mbe-6'>
             <Logo />
           </div>
           <div className='flex flex-col gap-1 mbe-6'>
-            <Typography variant='h4' className='font-bold'>{`Welcome to Scriptor!👋🏻`}</Typography>
-            <Typography>Please sign-in to your account and start the adventure</Typography>
+            <Typography variant='h4'>Adventure starts here 🚀</Typography>
+            <Typography>Make your app management easy and fun!</Typography>
           </div>
-          <form noValidate autoComplete='off' onSubmit={e => handleClickLogin(e)} className='flex flex-col gap-6'>
-            <CustomTextField
-              autoFocus
-              fullWidth
-              label='Email or Username'
-              placeholder='Enter your email or username'
+          <form noValidate autoComplete='off' onSubmit={e => handleClickRegister(e)} className='flex flex-col gap-6' >
+            <CustomTextField autoFocus fullWidth label='Username' placeholder='Enter your username'
+              value={username}
+              onChange={handleChangeUsername}
+            />
+            <CustomTextField fullWidth label='Email' placeholder='Enter your email'
               value={email}
               onChange={handleChangeEmail}
             />
@@ -84,10 +87,9 @@ const Login = () => {
               fullWidth
               label='Password'
               placeholder='············'
-              id='outlined-adornment-password'
+              type={isPasswordShown ? 'text' : 'password'}
               value={password}
               onChange={handleChangePassword}
-              type={isPasswordShown ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -98,28 +100,28 @@ const Login = () => {
                 )
               }}
             />
-            <div className='flex justify-between items-center gap-x-3 gap-y-1 flex-wrap'>
-              <FormControlLabel control={<Checkbox />} label='Remember me' />
-              <Typography
-                className='text-end'
-                color='primary'
-                component={Link}
-                href={('/forgot-password')}
-              >
-                Forgot password?
-              </Typography>
-            </div>
+            <FormControlLabel
+              control={<Checkbox />}
+              label={
+                <>
+                  <span>I agree to </span>
+                  <Link className='text-primary' href='/' onClick={e => e.preventDefault()}>
+                    privacy policy & terms
+                  </Link>
+                </>
+              }
+            />
             <Button fullWidth variant='contained' type='submit'>
-              Login
+              Sign Up
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>New on our platform?</Typography>
-              <Typography 
+              <Typography>Already have an account?</Typography>
+              <Typography
                 component={Link}
+                href={'/login'}
                 color='primary'
-                href={'/register'}
               >
-                Create an account
+                Sign in instead
               </Typography>
             </div>
             <Divider className='gap-2 text-textPrimary'>or</Divider>
@@ -144,4 +146,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Register

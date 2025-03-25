@@ -7,7 +7,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/utils/AuthContext'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -23,36 +22,30 @@ import Divider from '@mui/material/Divider'
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
+import { useAuth } from '@core/contexts/AuthContext'
 
 // Styled Component Imports
-import AuthIllustrationWrapper from './AuthIllustrationWrapper'
+import AuthIllustrationWrapper from '../AuthIllustrationWrapper'
 
-const Register = () => {
+const Login = () => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
 
-  // Hooks
-  const { lang: locale } = useParams()
-  const { signUp } = useAuth()
+  const { signIn } = useAuth()
   const router = useRouter()
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
-  const handleClickRegister = async (e: React.FormEvent) => {
+  const handleClickLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await signUp(email, password)
-      router.push('/login?message=Check your email to confirm your account')
+      await signIn(email, password)
+      router.push('/home')
     } catch (error) {
-      console.error('Error signing up:', error)
+      console.error('Error signing in:', error)
     }
-  }
-
-  const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value)
   }
 
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,21 +58,21 @@ const Register = () => {
 
   return (
     <AuthIllustrationWrapper>
-      <Card className='flex flex-col sm:is-[450px]'>
-        <CardContent className='sm:!p-12' >
+      <Card className='flex flex-col sm:is-[450px] ' >
+        <CardContent className='sm:!p-12'>
           <div className='flex justify-center mbe-6'>
             <Logo />
           </div>
           <div className='flex flex-col gap-1 mbe-6'>
-            <Typography variant='h4'>Adventure starts here 🚀</Typography>
-            <Typography>Make your app management easy and fun!</Typography>
+            <Typography variant='h4' className='font-bold'>{`Welcome to Scriptor!👋🏻`}</Typography>
+            <Typography>Please sign-in to your account and start the adventure</Typography>
           </div>
-          <form noValidate autoComplete='off' onSubmit={e => handleClickRegister(e)} className='flex flex-col gap-6' >
-            <CustomTextField autoFocus fullWidth label='Username' placeholder='Enter your username'
-              value={username}
-              onChange={handleChangeUsername}
-            />
-            <CustomTextField fullWidth label='Email' placeholder='Enter your email'
+          <form noValidate autoComplete='off' onSubmit={e => handleClickLogin(e)} className='flex flex-col gap-6'>
+            <CustomTextField
+              autoFocus
+              fullWidth
+              label='Email or Username'
+              placeholder='Enter your email or username'
               value={email}
               onChange={handleChangeEmail}
             />
@@ -87,9 +80,10 @@ const Register = () => {
               fullWidth
               label='Password'
               placeholder='············'
-              type={isPasswordShown ? 'text' : 'password'}
+              id='outlined-adornment-password'
               value={password}
               onChange={handleChangePassword}
+              type={isPasswordShown ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -100,28 +94,28 @@ const Register = () => {
                 )
               }}
             />
-            <FormControlLabel
-              control={<Checkbox />}
-              label={
-                <>
-                  <span>I agree to </span>
-                  <Link className='text-primary' href='/' onClick={e => e.preventDefault()}>
-                    privacy policy & terms
-                  </Link>
-                </>
-              }
-            />
+            <div className='flex justify-between items-center gap-x-3 gap-y-1 flex-wrap'>
+              <FormControlLabel control={<Checkbox />} label='Remember me' />
+              <Typography
+                className='text-end'
+                color='primary'
+                component={Link}
+                href={('/forgot-password')}
+              >
+                Forgot password?
+              </Typography>
+            </div>
             <Button fullWidth variant='contained' type='submit'>
-              Sign Up
+              Login
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>Already have an account?</Typography>
-              <Typography
+              <Typography>New on our platform?</Typography>
+              <Typography 
                 component={Link}
-                href={'/login'}
                 color='primary'
+                href={'/register'}
               >
-                Sign in instead
+                Create an account
               </Typography>
             </div>
             <Divider className='gap-2 text-textPrimary'>or</Divider>
@@ -146,4 +140,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default Login

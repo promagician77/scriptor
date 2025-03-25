@@ -11,7 +11,7 @@ import '@/app/globals.css'
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 
-import { AuthProvider } from '@/utils/AuthContext'
+import { AuthProvider } from '@core/contexts/AuthContext'
 
 export const metadata = {
   title: 'Scriptor',
