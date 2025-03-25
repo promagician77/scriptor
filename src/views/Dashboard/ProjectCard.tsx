@@ -15,7 +15,7 @@ interface ProjectCardProps {
 const ProjectCard = ({ title = 'The Last Horizon', category = 'Sci-Fi', completionPercentage = 65, lastUpdated = '2 days ago' }: ProjectCardProps) => {
   return (
     <Card className='bg-white shadow-sm'>
-      <CardContent className='space-y-3'>
+      <CardContent className='space-y-3'> 
         <div>
           <Typography variant='h6' className='text-gray-900'>
             {title}
