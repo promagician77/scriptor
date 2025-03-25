@@ -6,6 +6,8 @@ import { useState } from 'react'
 // Next Imports
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/utils/AuthContext'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -28,16 +30,43 @@ import AuthIllustrationWrapper from './AuthIllustrationWrapper'
 const RegisterV1 = () => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
 
   // Hooks
   const { lang: locale } = useParams()
+  const { signUp } = useAuth()
+  const router = useRouter()
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
+
+  const handleClickRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      await signUp(email, password)
+      router.push('/login?message=Check your email to confirm your account')
+    } catch (error) {
+      console.error('Error signing up:', error)
+    }
+  }
+
+  const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value)
+  }
+
+  const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+  }
+
+  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+  }
 
   return (
     <AuthIllustrationWrapper>
       <Card className='flex flex-col sm:is-[450px]'>
-        <CardContent className='sm:!p-12'>
+        <CardContent className='sm:!p-12' >
           <div className='flex justify-center mbe-6'>
             <Logo />
           </div>
@@ -45,14 +74,22 @@ const RegisterV1 = () => {
             <Typography variant='h4'>Adventure starts here 🚀</Typography>
             <Typography>Make your app management easy and fun!</Typography>
           </div>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()} className='flex flex-col gap-6'>
-            <CustomTextField autoFocus fullWidth label='Username' placeholder='Enter your username' />
-            <CustomTextField fullWidth label='Email' placeholder='Enter your email' />
+          <form noValidate autoComplete='off' onSubmit={e => handleClickRegister(e)} className='flex flex-col gap-6' >
+            <CustomTextField autoFocus fullWidth label='Username' placeholder='Enter your username'
+              value={username}
+              onChange={handleChangeUsername}
+            />
+            <CustomTextField fullWidth label='Email' placeholder='Enter your email'
+              value={email}
+              onChange={handleChangeEmail}
+            />
             <CustomTextField
               fullWidth
               label='Password'
               placeholder='············'
               type={isPasswordShown ? 'text' : 'password'}
+              value={password}
+              onChange={handleChangePassword}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>

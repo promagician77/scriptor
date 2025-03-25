@@ -22,6 +22,7 @@ import Divider from '@mui/material/Divider'
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
+import { AuthProvider } from '@/utils/AuthContext'
 import { useAuth } from '@/utils/AuthContext'
 
 // Config Imports
@@ -38,9 +39,6 @@ const LoginV1 = () => {
 
   const { signIn } = useAuth()
   const router = useRouter()
-
-  // Hooks
-  const { lang: locale } = useParams()
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
@@ -64,7 +62,7 @@ const LoginV1 = () => {
 
   return (
     <AuthIllustrationWrapper>
-      <Card className='flex flex-col sm:is-[450px] justify-center items-center'>
+      <Card className='flex flex-col sm:is-[450px] ' >
         <CardContent className='sm:!p-12'>
           <div className='flex justify-center mbe-6'>
             <Logo />
@@ -73,7 +71,7 @@ const LoginV1 = () => {
             <Typography variant='h4' className='font-bold'>{`Welcome to Scriptor!👋🏻`}</Typography>
             <Typography>Please sign-in to your account and start the adventure</Typography>
           </div>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()} className='flex flex-col gap-6'>
+          <form noValidate autoComplete='off' onSubmit={e => handleClickLogin(e)} className='flex flex-col gap-6'>
             <CustomTextField
               autoFocus
               fullWidth
@@ -111,7 +109,7 @@ const LoginV1 = () => {
                 Forgot password?
               </Typography>
             </div>
-            <Button fullWidth variant='contained' type='submit' onClick={handleClickLogin}>
+            <Button fullWidth variant='contained' type='submit'>
               Login
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
