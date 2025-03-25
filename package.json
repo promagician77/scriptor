@@ -21,6 +21,8 @@
     "@mui/lab": "5.0.0-alpha.173",
     "@mui/material": "5.16.6",
     "@mui/material-nextjs": "5.16.6",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.3",
     "classnames": "2.5.1",
     "next": "14.2.5",
     "react": "18.3.1",
