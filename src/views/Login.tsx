@@ -18,18 +18,12 @@ import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
 
-// Type Imports
-import type { Locale } from '@configs/i18n'
-
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
-
-// Util Imports
-import { getLocalizedUrl } from '@/utils/i18n'
 
 // Styled Component Imports
 import AuthIllustrationWrapper from './AuthIllustrationWrapper'
@@ -45,11 +39,11 @@ const LoginV1 = () => {
 
   return (
     <AuthIllustrationWrapper>
-      <Card className='flex flex-col sm:is-[450px]'>
+      <Card className='flex flex-col sm:is-[450px] justify-center items-center'>
         <CardContent className='sm:!p-12'>
-          <Link href={getLocalizedUrl('/', locale as Locale)} className='flex justify-center mbe-6'>
+          <div className='flex justify-center mbe-6'>
             <Logo />
-          </Link>
+          </div>
           <div className='flex flex-col gap-1 mbe-6'>
             <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
             <Typography>Please sign-in to your account and start the adventure</Typography>
@@ -78,7 +72,7 @@ const LoginV1 = () => {
                 className='text-end'
                 color='primary'
                 component={Link}
-                href={getLocalizedUrl('/pages/auth/forgot-password-v1', locale as Locale)}
+                href={('/pages/auth/forgot-password-v1')}
               >
                 Forgot password?
               </Typography>
@@ -90,7 +84,7 @@ const LoginV1 = () => {
               <Typography>New on our platform?</Typography>
               <Typography
                 component={Link}
-                href={getLocalizedUrl('/pages/auth/register-v1', locale as Locale)}
+                href={'/pages/auth/register-v1'}
                 color='primary'
               >
                 Create an account
