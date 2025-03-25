@@ -31,7 +31,7 @@ import themeConfig from '@configs/themeConfig'
 // Styled Component Imports
 import AuthIllustrationWrapper from './AuthIllustrationWrapper'
 
-const LoginV1 = () => {
+const Login = () => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
@@ -144,4 +144,4 @@ const LoginV1 = () => {
   )
 }
 
-export default LoginV1
+export default Login

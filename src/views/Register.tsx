@@ -27,7 +27,7 @@ import CustomTextField from '@core/components/mui/TextField'
 // Styled Component Imports
 import AuthIllustrationWrapper from './AuthIllustrationWrapper'
 
-const RegisterV1 = () => {
+const Register = () => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
@@ -146,4 +146,4 @@ const RegisterV1 = () => {
   )
 }
 
-export default RegisterV1
+export default Register
