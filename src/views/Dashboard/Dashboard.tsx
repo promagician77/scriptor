@@ -29,6 +29,7 @@ import type { ThemeColor } from '@core/types'
 import { Divider } from '@mui/material'
 
 // Component Imports
+import swal from 'sweetalert'
 
 type ChipColorType = {
   color: ThemeColor
@@ -68,6 +69,52 @@ const Dashboard = () => {
 
     fetchProjects()
   }, [rerender, activePage])
+
+  const handleDelete = async (projectId: string) => {
+    // Show confirmation dialog
+    const willDelete = await swal({
+      title: 'Delete Project?',
+      text: 'Are you sure you want to delete this project? This action cannot be undone.',
+      icon: 'warning',
+      buttons: ['Cancel', 'Yes, delete it!'],
+      dangerMode: true,
+    });
+
+    if (willDelete) {
+      try {
+        // Show loading state
+        swal({
+          title: 'Deleting project...',
+          text: 'Please wait...',
+          icon: 'info',
+          closeOnClickOutside: false,
+        });
+
+        const { error } = await supabase
+          .from('Project')
+          .delete()
+          .eq('id', projectId);
+
+        if (error) throw error;
+
+        await swal({
+          title: 'Success!',
+          text: 'Project deleted successfully',
+          icon: 'success',
+        });
+
+        // Trigger rerender to refresh the project list
+        setRerender(prev => !prev);
+      } catch (error) {
+        console.error('Error:', error);
+        await swal({
+          title: 'Error!',
+          text: 'Error deleting project',
+          icon: 'error',
+        });
+      }
+    }
+  };
 
   return (
     <Card className='w-full h-full'>
@@ -199,8 +246,10 @@ const Dashboard = () => {
                         variant='tonal'
                         color='error'
                         endIcon={<i className='bx-trash' />}
-                        component={Link}
-                        href={`/apps/academy/course-details`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click event
+                          handleDelete(project.id);
+                        }}
                         className='is-auto flex-auto'
                       >
                         Delete
