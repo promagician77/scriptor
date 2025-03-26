@@ -1,3 +1,7 @@
+import Swal from 'sweetalert'
+import { toast } from 'react-toastify'
+import { createClient } from '@configs/supabase'
+
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -10,9 +14,46 @@ interface ProjectCardProps {
   category: string
   completionPercentage: number
   lastUpdated: string
+  id: string
+  onUpdate: () => void
 }
 
-const ProjectCard = ({ title = 'The Last Horizon', category = 'Sci-Fi', completionPercentage = 65, lastUpdated = '2 days ago' }: ProjectCardProps) => {
+const ProjectCard = ({ title, category, completionPercentage, lastUpdated, id, onUpdate }: ProjectCardProps) => {
+  const supabase = createClient()
+  
+  const handleDelete = async () => {
+    const willDelete = await Swal({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      buttons: ['Cancel', 'Delete'],
+      dangerMode: true,
+    })
+
+    if (willDelete) {
+      try {
+        const { error } = await supabase
+          .from('Project')
+          .delete()
+          .eq('id', id)
+
+        if (error) {
+          toast.error('Error deleting project')
+        } else {
+          toast.success('Project deleted successfully')
+          onUpdate()
+        }
+      } catch (error) {
+        toast.error('Error deleting project')
+        console.error('Error:', error)
+      }
+    }
+  }
+
+  const handleEdit = async () => {
+    console.log('edit')
+  }
+  
   return (
     <Card className='bg-white shadow-sm'>
       <CardContent className='space-y-3'> 
@@ -44,19 +85,19 @@ const ProjectCard = ({ title = 'The Last Horizon', category = 'Sci-Fi', completi
           </Typography>
         </div>
 
-        <div className='flex gap-2 pt-2'>
+        <div className='flex gap-2 pt-2 justify-end'>
           <Button
             variant='outlined'
             size='small'
             className='min-w-0 px-3 py-1'
             sx={{
               borderColor: 'rgba(0, 0, 0, 0.12)',
-              color: 'text.primary',
               '&:hover': {
                 borderColor: 'rgba(0, 0, 0, 0.24)',
               }
             }}
             startIcon={<i className='bx-edit-alt' />}
+            onClick={handleEdit}
           >
             Edit
           </Button>
@@ -66,7 +107,6 @@ const ProjectCard = ({ title = 'The Last Horizon', category = 'Sci-Fi', completi
             className='min-w-0 px-3 py-1'
             sx={{
               borderColor: 'rgba(0, 0, 0, 0.12)',
-              color: 'text.primary',
               '&:hover': {
                 borderColor: 'rgba(0, 0, 0, 0.24)',
               }
@@ -77,18 +117,19 @@ const ProjectCard = ({ title = 'The Last Horizon', category = 'Sci-Fi', completi
           </Button>
           <Button
             variant='outlined'
+            color='error'
             size='small'
-            className='min-w-0 px-3 py-1'
             sx={{
-              borderColor: '#DC2626',
-              color: '#DC2626',
+              borderColor: 'rgba(0, 0, 0, 0.12)',
               '&:hover': {
-                borderColor: '#EF4444',
-                backgroundColor: 'rgba(220, 38, 38, 0.04)'
+                borderColor: 'rgba(0, 0, 0, 0.24)',
               }
             }}
             startIcon={<i className='bx-trash' />}
-          />
+            onClick={handleDelete}
+          >
+            Delete
+          </Button> 
         </div>
       </CardContent>
     </Card>

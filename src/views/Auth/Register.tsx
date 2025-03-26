@@ -45,6 +45,7 @@ const Register = () => {
     e.preventDefault()
     try {
       await signUp(email, password)
+
       router.push('/login?message=Check your email to confirm your account')
     } catch (error) {
       console.error('Error signing up:', error)
