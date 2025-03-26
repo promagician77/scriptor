@@ -5,13 +5,8 @@ const horizontalMenuData = (): HorizontalMenuDataType[] => [
   {
     label: 'Home',
     href: '/home',
-    icon: 'bx-home'
+    icon: 'bx-dashboard'
   },
-  {
-    label: 'About',
-    href: '/about',
-    icon: 'bx-info-circle'
-  }
 ]
 
 export default horizontalMenuData
