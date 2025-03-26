@@ -109,7 +109,7 @@ const Dashboard = () => {
         <div className='flex flex-wrap items-center justify-between gap-4'>
           <div>
             <Typography variant='h3'>Projects</Typography>
-            <Typography>Total 6 course you have purchased</Typography>
+            <Typography>Total {projects.length} projects you have created</Typography>
           </div>
           <div>
             <Button
