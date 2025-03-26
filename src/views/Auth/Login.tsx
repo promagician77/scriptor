@@ -1,14 +1,10 @@
 'use client'
 
-// React Imports
 import { useState } from 'react'
 
-// Next Imports
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 
-// MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
@@ -19,16 +15,13 @@ import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
 
-// Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 import { useAuth } from '@core/contexts/AuthContext'
 
-// Styled Component Imports
 import AuthIllustrationWrapper from '../AuthIllustrationWrapper'
 
 const Login = () => {
-  // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,6 +33,7 @@ const Login = () => {
 
   const handleClickLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    
     try {
       await signIn(email, password)
       router.push('/home')

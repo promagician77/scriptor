@@ -1,7 +1,5 @@
-// Next Imports
 import type { Metadata } from 'next'
 
-// Component Imports
 import Register from '@/views/Auth/Register'
 
 export const metadata: Metadata = {

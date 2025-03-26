@@ -61,19 +61,13 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
 
-  // Add this new state for modal
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
   useEffect(() => {
     // ... existing fetch project code ...
   }, [projectId, mode])
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0]
-      setSelectedImage(file)
-      setPreviewUrl(URL.createObjectURL(file))
-    }
+  const handleImageSelect = (file: File) => {
+    setSelectedImage(file)
+    setPreviewUrl(URL.createObjectURL(file))
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +82,6 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Show confirmation dialog
     const willCreate = await swal({
       title: 'Create Project?',
       text: 'Are you sure you want to create this project?',
@@ -99,7 +92,6 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
 
     if (willCreate) {
       try {
-        // Show loading state
         swal({
           title: 'Creating project...',
           text: 'Please wait...',
@@ -110,18 +102,28 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
         // Handle image upload if there's a new image
         let imageUrl = data.imageUrl
         if (selectedImage) {
+          // Upload to 'scriptor' bucket in the 'image' folder
           const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('course-images')
+            .from('scriptor')
             .upload(`${Date.now()}-${selectedImage.name}`, selectedImage)
 
           if (uploadError) throw uploadError
-          imageUrl = uploadData.path
+
+          // Get the complete public URL for the uploaded image
+          const { data: publicUrlData } = supabase.storage
+            .from('scriptor')
+            .getPublicUrl(uploadData.path)
+
+          // Store the complete public URL
+          imageUrl = publicUrlData.publicUrl
         }
 
         const submitData = {
           ...data,
           imageUrl
         }
+
+        console.log(submitData)
 
         if (mode === 'edit') {
           const { error } = await supabase
@@ -179,7 +181,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
           <Divider />
           <Grid container spacing={2} className='mt-4'>
               <Grid item xs={12} md={7}>
-                  <ImageUpload />
+                  <ImageUpload onImageSelect={handleImageSelect} />
               </Grid>
               <Divider orientation='vertical' flexItem className='pl-3'/>
               <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>

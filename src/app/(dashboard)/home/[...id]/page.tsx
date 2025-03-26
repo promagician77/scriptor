@@ -6,10 +6,6 @@ import ProjectManager from '@/views/Dashboard/ProjectManager'
 const ProjectPage = () => {
   const params = useParams()
   
-  // Handle different routes:
-  // /home/new -> create mode
-  // /home/[id] -> show mode
-  // /home/[id]/edit -> edit mode
   const id = params?.id?.[0]
   const isEdit = params?.id?.[1] === 'edit'
   const isNew = id === 'new'

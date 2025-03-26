@@ -45,7 +45,11 @@ const Dropzone = styled(AppReactDropzone)<BoxProps>(({ theme }) => ({
   }
 }))
 
-const ProductImage = () => {
+interface ProductImageProps {
+  onImageSelect: (file: File) => void
+}
+
+const ProductImage = ({ onImageSelect }: ProductImageProps) => {
   // States
   const [files, setFiles] = useState<File[]>([])
 
@@ -53,6 +57,10 @@ const ProductImage = () => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles: File[]) => {
       setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
+      // Send the first file to parent component
+      if (acceptedFiles.length > 0) {
+        onImageSelect(acceptedFiles[0])
+      }
     }
   })
 

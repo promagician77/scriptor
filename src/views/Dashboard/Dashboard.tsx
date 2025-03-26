@@ -1,14 +1,12 @@
 'use client'
 
 // React Imports
-import type { ChangeEvent } from 'react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 // Next Imports
 import Link from 'next/link'
 import { createClient } from '@configs/supabase'
-import { useParams } from 'next/navigation'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -16,32 +14,20 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import LinearProgress from '@mui/material/LinearProgress'
-import MenuItem from '@mui/material/MenuItem'
 import Pagination from '@mui/material/Pagination'
-import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 
-// Type Imports
-import type { Course } from '@/types/projectTypes'
 import type { ThemeColor } from '@core/types'
 import { Divider } from '@mui/material'
 
-// Component Imports
 import swal from 'sweetalert'
 
 type ChipColorType = {
   color: ThemeColor
 }
 
-const chipColor: { [key: string]: ChipColorType } = {
-  Web: { color: 'primary' },
-  Art: { color: 'success' },
-  'UI/UX': { color: 'error' },
-  Psychology: { color: 'warning' },
-  Design: { color: 'info' }
-}
+const chipColor: ThemeColor[] = ["primary", "success", "error", "warning", "info"]
 
 const Dashboard = () => {
   const supabase = createClient();
@@ -63,6 +49,7 @@ const Dashboard = () => {
       if (error) {
         console.error('Error fetching projects:', error)
       } else {
+        console.log(data)
         setProjects(data)
       }
     }
@@ -173,17 +160,20 @@ const Dashboard = () => {
                 style={{ cursor: 'pointer' }}
               >
                 <div className='pli-2 pbs-2'>
-                  <Link href={`/apps/academy/course-details`} className='flex'>
-                    <img 
-                      src={project.image_url} 
-                      className='is-full' 
-                      alt={project.title}
-                    />
-                  </Link>
+                  <img 
+                    src={project.imageUrl} 
+                    className='is-full' 
+                    alt={project.title}
+                  />
                 </div>
                 <div className='flex flex-col gap-4 p-6'>
                   <div className='flex items-center justify-between'>
-                    <Chip label="Web" variant='tonal' size='small' color={chipColor["Web"].color} />
+                    <Chip 
+                      label={project.genre} 
+                      variant='tonal' 
+                      size='small' 
+                      color={chipColor[project.id % chipColor.length] as ThemeColor} 
+                    />
                     <div className='flex items-start'>
                       <Typography className='font-medium mie-1'>4.8</Typography>
                       <i className='bx-bxs-star text-xl text-warning mie-2' />
