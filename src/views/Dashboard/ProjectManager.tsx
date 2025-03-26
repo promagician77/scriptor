@@ -34,6 +34,8 @@ import type { ThemeColor } from '@core/types'
 
 // Component Imports
 import ImageUpload from './ImageUpload'
+import CreateProjectModal from './CreateProjectModal'
+import swal from 'sweetalert'
 
 
 const genres = ['Romance', 'Mystery', 'Sci-Fi', 'Drama', 'Comedy', 'Horror']
@@ -54,15 +56,13 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
     tone: '',
     concept: '',
     imageUrl: '',
-    duration: '1.5 hours',
-    lectures: 19,
-    level: 'All Level',
-    students: 38815,
-    language: 'English'
   })
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
+
+  // Add this new state for modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     // ... existing fetch project code ...
@@ -88,116 +88,151 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    try {
-      // Handle image upload if there's a new image
-      let imageUrl = data.imageUrl
-      if (selectedImage) {
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('course-images')
-          .upload(`${Date.now()}-${selectedImage.name}`, selectedImage)
+    // Show confirmation dialog
+    const willCreate = await swal({
+      title: 'Create Project?',
+      text: 'Are you sure you want to create this project?',
+      icon: 'warning',
+      buttons: ['Cancel', 'Yes, create it!'],
+      dangerMode: true,
+    })
 
-        if (uploadError) throw uploadError
-        imageUrl = uploadData.path
+    if (willCreate) {
+      try {
+        // Show loading state
+        swal({
+          title: 'Creating project...',
+          text: 'Please wait...',
+          icon: 'info',
+          closeOnClickOutside: false,
+        })
+
+        // Handle image upload if there's a new image
+        let imageUrl = data.imageUrl
+        if (selectedImage) {
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('course-images')
+            .upload(`${Date.now()}-${selectedImage.name}`, selectedImage)
+
+          if (uploadError) throw uploadError
+          imageUrl = uploadData.path
+        }
+
+        const submitData = {
+          ...data,
+          imageUrl
+        }
+
+        if (mode === 'edit') {
+          const { error } = await supabase
+            .from('Project')
+            .update(submitData)
+            .eq('id', projectId)
+
+          if (error) throw error
+          
+          await swal({
+            title: 'Success!',
+            text: 'Project updated successfully',
+            icon: 'success',
+          })
+        } else if (mode === 'create') {
+          const { error } = await supabase
+            .from('Project')
+            .insert(submitData)
+
+          if (error) throw error
+          
+          await swal({
+            title: 'Success!',
+            text: 'Project created successfully',
+            icon: 'success',
+          })
+        }
+
+        router.push('/home')
+      } catch (error) {
+        console.error('Error:', error)
+        await swal({
+          title: 'Error!',
+          text: mode === 'edit' ? 'Error updating project' : 'Error creating project',
+          icon: 'error',
+        })
       }
-
-      const submitData = {
-        ...data,
-        imageUrl
-      }
-
-      if (mode === 'edit') {
-        const { error } = await supabase
-          .from('Project')
-          .update(submitData)
-          .eq('id', projectId)
-
-        if (error) throw error
-        toast.success('Course updated successfully')
-      } else if (mode === 'create') {
-        const { error } = await supabase
-          .from('Project')
-          .insert(submitData)
-
-        if (error) throw error
-        toast.success('Course created successfully')
-      }
-
-      router.push('/home')
-    } catch (error) {
-      toast.error(mode === 'edit' ? 'Error updating course' : 'Error creating course')
-      console.error('Error:', error)
     }
   }
 
   return (
     <Card className='w-full h-full'>
       <CardContent className='flex flex-col gap-6 h-full'>
-        <div className='flex flex-wrap items-center justify-between gap-4'>
-          <div>
-            <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : 'Create Project'}</Typography>
-          </div>
-          <div>
-            <Button type="submit" variant="contained" color="primary">
+        <form onSubmit={handleSubmit}>
+          <div className='flex flex-wrap items-center justify-between gap-4'>
+            <div>
+              <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : 'Create Project'}</Typography>
+            </div>
+            <div>
+              <Button type="submit" variant="contained" color="primary">
                 {mode === 'edit' ? 'Update' : 'Create'}
-            </Button>
+              </Button>
+            </div>
           </div>
-        </div>
-        <Divider />
-        <Grid container spacing={2} className='mt-4'>
-            <Grid item xs={12} md={7}>
-                <ImageUpload />
-            </Grid>
-            <Divider orientation='vertical' flexItem className='pl-3'/>
-            <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>
-                <TextField
-                    fullWidth
-                    label='Title'
-                    name='title'
-                    value={data.title}
-                    onChange={handleChange}
-                />
-                <TextField
-                    fullWidth
-                    select
-                    label="Genre"
-                    name="genre"
-                    value={data.genre}
-                    onChange={handleChange}
-                    disabled={isReadOnly}
-                >
-                    {genres.map(genre => (
-                    <MenuItem key={genre} value={genre}>
-                        {genre}
-                    </MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    fullWidth
-                    select
-                    label="Tone"
-                    name="tone"
-                    value={data.tone}
-                    onChange={handleChange}
-                    disabled={isReadOnly}
-                >
-                    {tones.map(tone => (
-                    <MenuItem key={tone} value={tone}>
-                        {tone}
-                    </MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    label="Concept"
-                    name="concept"
-                    value={data.concept}
-                    onChange={handleChange}
-                    disabled={isReadOnly}
-                />
-            </Grid>
-        </Grid>
+          <Divider />
+          <Grid container spacing={2} className='mt-4'>
+              <Grid item xs={12} md={7}>
+                  <ImageUpload />
+              </Grid>
+              <Divider orientation='vertical' flexItem className='pl-3'/>
+              <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>
+                  <TextField
+                      fullWidth
+                      label='Title'
+                      name='title'
+                      value={data.title}
+                      onChange={handleChange}
+                  />
+                  <TextField
+                      fullWidth
+                      select
+                      label="Genre"
+                      name="genre"
+                      value={data.genre}
+                      onChange={handleChange}
+                      disabled={isReadOnly}
+                  >
+                      {genres.map(genre => (
+                      <MenuItem key={genre} value={genre}>
+                          {genre}
+                      </MenuItem>
+                      ))}
+                  </TextField>
+                  <TextField
+                      fullWidth
+                      select
+                      label="Tone"
+                      name="tone"
+                      value={data.tone}
+                      onChange={handleChange}
+                      disabled={isReadOnly}
+                  >
+                      {tones.map(tone => (
+                      <MenuItem key={tone} value={tone}>
+                          {tone}
+                      </MenuItem>
+                      ))}
+                  </TextField>
+                  <TextField
+                      fullWidth
+                      multiline
+                      rows={4}
+                      label="Concept"
+                      name="concept"
+                      value={data.concept}
+                      onChange={handleChange}
+                      disabled={isReadOnly}
+                  />
+              </Grid>
+          </Grid>
+        </form>
       </CardContent>
     </Card>
   )

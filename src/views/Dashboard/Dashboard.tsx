@@ -26,6 +26,7 @@ import Typography from '@mui/material/Typography'
 // Type Imports
 import type { Course } from '@/types/projectTypes'
 import type { ThemeColor } from '@core/types'
+import { Divider } from '@mui/material'
 
 // Component Imports
 
@@ -114,6 +115,7 @@ const Dashboard = () => {
           </div> */}
         </div>
         {/* {data.length > 0 ? ( */}
+        <Divider />
         <Grid container spacing={2} className='mt-4'>
         {
           projects.map((project) => (
@@ -125,7 +127,11 @@ const Dashboard = () => {
               >
                 <div className='pli-2 pbs-2'>
                   <Link href={`/apps/academy/course-details`} className='flex'>
-                    <img src="./1.png" className='is-full' />
+                    <img 
+                      src={project.image_url} 
+                      className='is-full' 
+                      alt={project.title}
+                    />
                   </Link>
                 </div>
                 <div className='flex flex-col gap-4 p-6'>
