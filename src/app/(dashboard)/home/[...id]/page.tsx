@@ -19,7 +19,7 @@ const ProjectPage = () => {
   else if (isEdit) mode = 'edit'
 
   return (
-    <div className='flex flex-col justify-center items-center p-6'>
+    <div className='flex flex-col justify-center items-center'>
       <ProjectManager 
         mode={mode}
         projectId={!isNew ? id : undefined}

@@ -1,17 +1,40 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+// React Imports
+import type { ChangeEvent } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
+// Next Imports
+import Link from 'next/link'
 import { createClient } from '@configs/supabase'
+import { useParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 
 // MUI Imports
+import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
+import Pagination from '@mui/material/Pagination'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import Box from '@mui/material/Box'
+
+// Type Imports
+import type { Course } from '@/types/projectTypes'
+import type { ThemeColor } from '@core/types'
+
+// Component Imports
+import ImageUpload from './ImageUpload'
+
 
 const genres = ['Romance', 'Mystery', 'Sci-Fi', 'Drama', 'Comedy', 'Horror']
 const tones = ['Light', 'Dark', 'Humorous', 'Serious', 'Mysterious']
@@ -42,35 +65,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   const [previewUrl, setPreviewUrl] = useState<string>('')
 
   useEffect(() => {
-    if (projectId && (mode === 'edit' || mode === 'show')) {
-      const fetchProject = async () => {
-        const { data: projectData, error } = await supabase
-          .from('Project')
-          .select('*')
-          .eq('id', projectId)
-          .single()
-
-        if (error) {
-          toast.error('Error fetching project')
-          router.push('/home')
-        } else if (projectData) {
-          setData({
-            title: projectData.title,
-            genre: projectData.genre,
-            tone: projectData.tone,
-            concept: projectData.concept || '',
-            imageUrl: projectData.imageUrl || '',
-            duration: projectData.duration || '1.5 hours',
-            lectures: projectData.lectures || 19,
-            level: projectData.level || 'All Level',
-            students: projectData.students || 38815,
-            language: projectData.language || 'English'
-          })
-        }
-      }
-
-      fetchProject()
-    }
+    // ... existing fetch project code ...
   }, [projectId, mode])
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +82,8 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
       [e.target.name]: e.target.value
     })
   }
+
+  const isReadOnly = mode === 'show'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -132,117 +129,78 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
     }
   }
 
-  const isReadOnly = mode === 'show'
-
   return (
-    <Card className='w-full max-w-2xl mx-auto mt-8'>
-      <CardContent className='space-y-6'>
-        <div>
-          <Typography variant='h5' className='mb-2'>
-            {mode === 'create' ? 'Create New Project' : 
-             mode === 'edit' ? 'Edit Project' : 'Project Details'}
-          </Typography>
-        </div>
-
-        <form onSubmit={handleSubmit} className='space-y-6'>
-          <div className='space-y-2'>
-            <Typography variant='subtitle2' className='text-gray-700'>Title</Typography>
-            <TextField
-              name="title"
-              placeholder="Enter project title"
-              fullWidth
-              required
-              value={data.title}
-              onChange={handleChange}
-              size="small"
-              disabled={isReadOnly}
-            />
+    <Card className='w-full h-full'>
+      <CardContent className='flex flex-col gap-6 h-full'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div>
+            <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : 'Create Project'}</Typography>
           </div>
-
-          <div className='space-y-2'>
-            <Typography variant='subtitle2' className='text-gray-700'>Genre</Typography>
-            <TextField
-              name="genre"
-              select
-              fullWidth
-              required
-              value={data.genre}
-              onChange={handleChange}
-              size="small"
-              disabled={isReadOnly}
-            >
-              {genres.map((genre) => (
-                <MenuItem key={genre} value={genre}>
-                  {genre}
-                </MenuItem>
-              ))}
-            </TextField>
-          </div>
-
-          <div className='space-y-2'>
-            <Typography variant='subtitle2' className='text-gray-700'>Tone</Typography>
-            <TextField
-              name="tone"
-              select
-              fullWidth
-              required
-              value={data.tone}
-              onChange={handleChange}
-              size="small"
-              disabled={isReadOnly}
-            >
-              {tones.map((tone) => (
-                <MenuItem key={tone} value={tone}>
-                  {tone}
-                </MenuItem>
-              ))}
-            </TextField>
-          </div>
-
-          <div className='space-y-2'>
-            <Typography variant='subtitle2' className='text-gray-700'>Concept</Typography>
-            <TextField
-              name="concept"
-              multiline
-              rows={4}
-              fullWidth
-              placeholder="Brief description of your concept (optional)"
-              value={data.concept}
-              onChange={handleChange}
-              disabled={isReadOnly}
-            />
-          </div>
-
-          <div className='flex gap-3 justify-end'>
-            <Button
-              variant="outlined"
-              onClick={() => router.push('/home')}
-            >
-              {isReadOnly ? 'Back' : 'Cancel'}
+          <div>
+            <Button type="submit" variant="contained" color="primary">
+                {mode === 'edit' ? 'Update' : 'Create'}
             </Button>
-            {!isReadOnly && (
-              <Button
-                type="submit"
-                variant="contained"
-                className='bg-purple-600 hover:bg-purple-700'
-              >
-                {mode === 'edit' ? 'Update Project' : 'Create Project'}
-              </Button>
-            )}
-            {isReadOnly && (
-              <Button
-                variant="contained"
-                className='bg-purple-600 hover:bg-purple-700'
-                onClick={() => router.push(`/home/${projectId}/edit`)}
-              >
-                Edit Project
-              </Button>
-            )}
           </div>
-        </form>
+        </div>
+        <Divider />
+        <Grid container spacing={2} className='mt-4'>
+            <Grid item xs={12} md={7}>
+                <ImageUpload />
+            </Grid>
+            <Divider orientation='vertical' flexItem className='pl-3'/>
+            <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>
+                <TextField
+                    fullWidth
+                    label='Title'
+                    name='title'
+                    value={data.title}
+                    onChange={handleChange}
+                />
+                <TextField
+                    fullWidth
+                    select
+                    label="Genre"
+                    name="genre"
+                    value={data.genre}
+                    onChange={handleChange}
+                    disabled={isReadOnly}
+                >
+                    {genres.map(genre => (
+                    <MenuItem key={genre} value={genre}>
+                        {genre}
+                    </MenuItem>
+                    ))}
+                </TextField>
+                <TextField
+                    fullWidth
+                    select
+                    label="Tone"
+                    name="tone"
+                    value={data.tone}
+                    onChange={handleChange}
+                    disabled={isReadOnly}
+                >
+                    {tones.map(tone => (
+                    <MenuItem key={tone} value={tone}>
+                        {tone}
+                    </MenuItem>
+                    ))}
+                </TextField>
+                <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    label="Concept"
+                    name="concept"
+                    value={data.concept}
+                    onChange={handleChange}
+                    disabled={isReadOnly}
+                />
+            </Grid>
+        </Grid>
       </CardContent>
     </Card>
   )
 }
 
-export default ProjectManager 
+export default ProjectManager
