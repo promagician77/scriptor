@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 // External Imports
 import { toast } from 'react-toastify'
@@ -49,7 +49,6 @@ const Register = () => {
   })
 
   // Hooks
-  const { lang: locale } = useParams()
   const { signUp } = useAuth()
   const router = useRouter()
 
