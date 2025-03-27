@@ -247,7 +247,17 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
                 </Button>
               )
             }
-            <Button type="submit" variant="tonal" color="error" className='ml-4' startIcon={<i className='bx-x' />}>
+            <Button 
+              type="button" 
+              variant="tonal" 
+              color="error" 
+              className='ml-4' 
+              startIcon={<i className='bx-x' />} 
+              onClick={(e) => {
+                e.preventDefault();
+                router.push('/home');
+              }}
+            >
               Cancel
             </Button>
           </div>
