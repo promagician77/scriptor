@@ -1,12 +1,13 @@
 'use client'
 
 // React Imports
-import type { ChangeEvent } from 'react'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
 // Next Imports
-import { createClient } from '@configs/supabase'
+import { useRouter } from 'next/navigation'
+
+// External Imports
+import swal from 'sweetalert'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -18,10 +19,9 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
 
-// Component Imports
+// Internal Imports
+import { createClient } from '@configs/supabase'
 import ImageUpload from './ImageUpload'
-import swal from 'sweetalert'
-
 
 const genres = ['Romance', 'Mystery', 'Sci-Fi', 'Drama', 'Comedy', 'Horror']
 const tones = ['Light', 'Dark', 'Humorous', 'Serious', 'Mysterious']
@@ -34,13 +34,13 @@ interface ProjectManagerProps {
 const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   const router = useRouter()
   const supabase = createClient()
-  
+
   const [data, setData] = useState({
     title: '',
     genre: '',
     tone: '',
     concept: '',
-    imageUrl: '',
+    imageUrl: ''
   })
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
@@ -49,31 +49,28 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   useEffect(() => {
     if (projectId) {
       const fetchProject = async () => {
-        const { data, error } = await supabase
-          .from('Project')
-          .select('*')
-          .eq('id', projectId)
-          .single()
+        const { data: projectData, error } = await supabase.from('Project').select('*').eq('id', projectId).single()
 
         if (error) {
           console.error('Error fetching project:', error)
           await swal({
             title: 'Error!',
             text: 'Failed to fetch project data',
-            icon: 'error',
+            icon: 'error'
           })
-        } else if (data) {
-          setData(data)
+        } else if (projectData) {
+          setData(projectData)
+
           // Set preview URL if there's an existing image
-          if (data.imageUrl) {
-            setPreviewUrl(data.imageUrl)
+          if (projectData.imageUrl) {
+            setPreviewUrl(projectData.imageUrl)
           }
         }
       }
 
       fetchProject()
     }
-  }, [projectId, mode])
+  }, [projectId, mode, supabase])
 
   const handleImageSelect = (file: File) => {
     setSelectedImage(file)
@@ -91,13 +88,13 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const willCreate = await swal({
       title: 'Create Project?',
       text: 'Are you sure you want to create this project?',
       icon: 'warning',
       buttons: ['Cancel', 'Yes, create it!'],
-      dangerMode: true,
+      dangerMode: true
     })
 
     if (willCreate) {
@@ -106,10 +103,11 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
           title: mode === 'create' ? 'Creating project...' : 'Updating project...',
           text: 'Please wait...',
           icon: 'info',
-          closeOnClickOutside: false,
+          closeOnClickOutside: false
         })
 
         let imageUrl = data.imageUrl
+
         if (selectedImage) {
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('scriptor')
@@ -117,9 +115,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
 
           if (uploadError) throw uploadError
 
-          const { data: publicUrlData } = supabase.storage
-            .from('scriptor')
-            .getPublicUrl(uploadData.path)
+          const { data: publicUrlData } = supabase.storage.from('scriptor').getPublicUrl(uploadData.path)
 
           imageUrl = publicUrlData.publicUrl
         }
@@ -130,29 +126,24 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
         }
 
         if (mode === 'edit') {
-          const { error } = await supabase
-            .from('Project')
-            .update(submitData)
-            .eq('id', projectId)
+          const { error } = await supabase.from('Project').update(submitData).eq('id', projectId)
 
           if (error) throw error
-          
+
           await swal({
             title: 'Success!',
             text: 'Project updated successfully',
-            icon: 'success',
+            icon: 'success'
           })
         } else if (mode === 'create') {
-          const { error } = await supabase
-            .from('Project')
-            .insert(submitData)
+          const { error } = await supabase.from('Project').insert(submitData)
 
           if (error) throw error
-          
+
           await swal({
             title: 'Success!',
             text: 'Project created successfully',
-            icon: 'success',
+            icon: 'success'
           })
         }
 
@@ -162,7 +153,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
         await swal({
           title: 'Error!',
           text: mode === 'edit' ? 'Error updating project' : 'Error creating project',
-          icon: 'error',
+          icon: 'error'
         })
       }
     }
@@ -174,91 +165,88 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
         <form onSubmit={handleSubmit}>
           <div className='flex flex-wrap items-center justify-between gap-4'>
             <div>
-              <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : mode === 'create' ? 'Create Project' : data.title}</Typography>
+              <Typography variant='h3'>
+                {mode === 'edit' ? 'Edit Project' : mode === 'create' ? 'Create Project' : data.title}
+              </Typography>
             </div>
           </div>
           <Divider />
           <Grid container spacing={2} className='mt-4'>
-              <Grid item xs={12} md={7}>
-                  <ImageUpload 
-                    onImageSelect={handleImageSelect} 
-                    previewUrl={previewUrl}
-                    isReadOnly={isReadOnly}
-                  />
-              </Grid>
-              <Divider orientation='vertical' flexItem className='pl-3'/>
-              <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>
-                  <TextField
-                      fullWidth
-                      label='Title'
-                      name='title'
-                      value={data.title}
-                      onChange={handleChange}
-                      disabled={isReadOnly}
-                  />
-                  <TextField
-                      fullWidth
-                      select
-                      label="Genre"
-                      name="genre"
-                      value={data.genre}
-                      onChange={handleChange}
-                      disabled={isReadOnly}
-                  >
-                      {genres.map(genre => (
-                      <MenuItem key={genre} value={genre}>
-                          {genre}
-                      </MenuItem>
-                      ))}
-                  </TextField>
-                  <TextField
-                      fullWidth
-                      select
-                      label="Tone"
-                      name="tone"
-                      value={data.tone}
-                      onChange={handleChange}
-                      disabled={isReadOnly}
-                  >
-                      {tones.map(tone => (
-                      <MenuItem key={tone} value={tone}>
-                          {tone}
-                      </MenuItem>
-                      ))}
-                  </TextField>
-                  <TextField
-                      fullWidth
-                      multiline
-                      rows={4}
-                      label="Concept"
-                      name="concept"
-                      value={data.concept}
-                      onChange={handleChange}
-                      disabled={isReadOnly}
-                  />
-              </Grid>
+            <Grid item xs={12} md={7}>
+              <ImageUpload onImageSelect={handleImageSelect} previewUrl={previewUrl} isReadOnly={isReadOnly} />
+            </Grid>
+            <Divider orientation='vertical' flexItem className='pl-3' />
+            <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>
+              <TextField
+                fullWidth
+                label='Title'
+                name='title'
+                value={data.title}
+                onChange={handleChange}
+                disabled={isReadOnly}
+              />
+              <TextField
+                fullWidth
+                select
+                label='Genre'
+                name='genre'
+                value={data.genre}
+                onChange={handleChange}
+                disabled={isReadOnly}
+              >
+                {genres.map(genre => (
+                  <MenuItem key={genre} value={genre}>
+                    {genre}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                fullWidth
+                select
+                label='Tone'
+                name='tone'
+                value={data.tone}
+                onChange={handleChange}
+                disabled={isReadOnly}
+              >
+                {tones.map(tone => (
+                  <MenuItem key={tone} value={tone}>
+                    {tone}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label='Concept'
+                name='concept'
+                value={data.concept}
+                onChange={handleChange}
+                disabled={isReadOnly}
+              />
+            </Grid>
           </Grid>
-          <Divider flexItem className='mt-4 mb-4'/>
+          <Divider flexItem className='mt-4 mb-4' />
           <div className='flex justify-end'>
-            {
-              mode !== 'show' && (
-                <Button type="submit" variant="tonal" color="primary" startIcon={mode === 'edit' ? <i className='bx-edit-alt' /> : <i className='bx-plus' />}>
-                  {mode === 'edit' ? 'Update' : 'Create'}
-                </Button>
-              )
-            }
-            <Button 
-              type="button" 
-              variant="tonal" 
-              color="error" 
-              className='ml-4' 
-              startIcon={<i className='bx-x' />} 
-              onClick={(e) => {
-                e.preventDefault();
-                router.push('/home');
-              }}
+            {mode !== 'show' && (
+              <Button
+                type='submit'
+                variant='tonal'
+                color='primary'
+                startIcon={mode === 'edit' ? <i className='bx-edit-alt' /> : <i className='bx-plus' />}
+              >
+                {mode === 'edit' ? 'Update' : 'Create'}
+              </Button>
+            )}
+            <Button
+              variant='tonal'
+              color='secondary'
+              startIcon={<i className='bx-arrow-back' />}
+              onClick={() => router.push('/home')}
+              className='mie-2'
             >
-              Cancel
+              Back
             </Button>
           </div>
         </form>

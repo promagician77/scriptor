@@ -5,9 +5,9 @@ import { useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@core/contexts/AuthContext'
+
+// External Imports
 import { toast } from 'react-toastify'
 
 // MUI Imports
@@ -25,6 +25,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
+import { useAuth } from '@core/contexts/AuthContext'
 
 // Styled Component Imports
 import AuthIllustrationWrapper from '../AuthIllustrationWrapper'
@@ -39,6 +40,7 @@ const Register = () => {
   const [username, setUsername] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
   const [errors, setErrors] = useState({
     username: '',
     email: '',
@@ -48,7 +50,6 @@ const Register = () => {
   })
 
   // Hooks
-  const { lang: locale } = useParams()
   const { signUp } = useAuth()
   const router = useRouter()
 
@@ -57,12 +58,14 @@ const Register = () => {
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
     return emailRegex.test(email)
   }
 
   const validateUsername = (username: string) => {
     // Username should be 3-20 characters, alphanumeric with underscores allowed
     const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
+
     return usernameRegex.test(username)
   }
 
@@ -104,21 +107,23 @@ const Register = () => {
     }
 
     setErrors(newErrors)
+
     return !Object.values(newErrors).some(error => error !== '')
   }
 
   const handleClickRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
 
     setIsLoading(true)
+
     try {
       await signUp(email, password)
-      console.log('success')
       toast.success('Registration successful! Please check your email to confirm your account.')
+
       // Wait for the success message to be shown before redirecting
       setTimeout(() => {
         router.push('/login?message=Check your email to confirm your account')
@@ -135,7 +140,7 @@ const Register = () => {
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
-        draggable: true,
+        draggable: true
       })
     } finally {
       setIsLoading(false)
@@ -170,7 +175,7 @@ const Register = () => {
   return (
     <AuthIllustrationWrapper>
       <Card className='flex flex-col sm:is-[450px]'>
-        <CardContent className='sm:!p-12' >
+        <CardContent className='sm:!p-12'>
           <div className='flex justify-center mbe-6'>
             <Logo />
           </div>
@@ -178,11 +183,11 @@ const Register = () => {
             <Typography variant='h4'>Adventure starts here 🚀</Typography>
             <Typography>Make your app management easy and fun!</Typography>
           </div>
-          <form noValidate autoComplete='off' onSubmit={e => handleClickRegister(e)} className='flex flex-col gap-6' >
-            <CustomTextField 
-              autoFocus 
-              fullWidth 
-              label='Username' 
+          <form noValidate autoComplete='off' onSubmit={e => handleClickRegister(e)} className='flex flex-col gap-6'>
+            <CustomTextField
+              autoFocus
+              fullWidth
+              label='Username'
               placeholder='Enter your username'
               value={username}
               onChange={handleChangeUsername}
@@ -190,9 +195,9 @@ const Register = () => {
               helperText={errors.username}
               disabled={isLoading}
             />
-            <CustomTextField 
-              fullWidth 
-              label='Email' 
+            <CustomTextField
+              fullWidth
+              label='Email'
               placeholder='Enter your email'
               value={email}
               onChange={handleChangeEmail}
@@ -233,7 +238,11 @@ const Register = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
-                    <IconButton edge='end' onClick={handleClickShowConfirmPassword} onMouseDown={e => e.preventDefault()}>
+                    <IconButton
+                      edge='end'
+                      onClick={handleClickShowConfirmPassword}
+                      onMouseDown={e => e.preventDefault()}
+                    >
                       <i className={isConfirmPasswordShown ? 'bx-hide' : 'bx-show'} />
                     </IconButton>
                   </InputAdornment>
@@ -242,7 +251,7 @@ const Register = () => {
             />
             <FormControlLabel
               control={
-                <Checkbox 
+                <Checkbox
                   checked={termsAccepted}
                   onChange={handleTermsChange}
                   color={errors.terms ? 'error' : 'primary'}
@@ -250,30 +259,25 @@ const Register = () => {
                 />
               }
               label={
-                <>
-                  <span>I agree to </span>
-                  <Link 
-                    className='text-primary' 
-                    href='/' 
-                    onClick={e => e.preventDefault()}
-                    style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
-                  >
-                    privacy policy & terms
-                  </Link>
-                </>
+                <Typography>
+                  I agree to the{' '}
+                  <Typography component={Link} href='/terms' color='primary'>
+                    terms and conditions
+                  </Typography>
+                </Typography>
               }
             />
             {errors.terms && (
-              <Typography color="error" variant="caption" className="mbs-[-1rem]">
+              <Typography color='error' variant='caption'>
                 {errors.terms}
               </Typography>
             )}
-            <Button 
-              fullWidth 
-              variant='contained' 
+            <Button
+              fullWidth
+              variant='contained'
               type='submit'
               disabled={!!Object.values(errors).some(error => error !== '') || isLoading}
-              sx={{ 
+              sx={{
                 position: 'relative',
                 minHeight: '36px'
               }}
@@ -287,19 +291,19 @@ const Register = () => {
                     top: '50%',
                     left: '50%',
                     marginTop: '-12px',
-                    marginLeft: '-12px',
+                    marginLeft: '-12px'
                   }}
                 />
               ) : (
-                'Sign Up'
+                'Sign up'
               )}
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>Already have an account?</Typography>
               <Typography
                 component={Link}
-                href={'/login'}
                 color='primary'
+                href={'/login'}
                 sx={{ pointerEvents: isLoading ? 'none' : 'auto' }}
               >
                 Sign in instead

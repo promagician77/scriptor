@@ -3,6 +3,9 @@
 // React Imports
 import { useState } from 'react'
 
+// Next Imports
+import Link from 'next/link'
+
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -19,7 +22,6 @@ import type { BoxProps } from '@mui/material/Box'
 import { useDropzone } from 'react-dropzone'
 
 // Component Imports
-import Link from '@components/Link'
 import CustomAvatar from '@core/components/mui/Avatar'
 
 // Styled Component Imports
@@ -59,6 +61,7 @@ const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProp
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles: File[]) => {
       setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
+
       // Send the first file to parent component
       if (acceptedFiles.length > 0) {
         onImageSelect(acceptedFiles[0])
@@ -118,9 +121,9 @@ const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProp
           title='Product Image'
           action={
             !isReadOnly && (
-              <Typography component={Link} color='primary' className='font-medium'>
+              <Link href='#' className='text-primary font-medium'>
                 Add media from URL
-              </Typography>
+              </Link>
             )
           }
           sx={{ '& .MuiCardHeader-action': { alignSelf: 'center' } }}
@@ -142,7 +145,7 @@ const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProp
             </div>
           ) : previewUrl ? (
             <div className='flex items-center justify-center'>
-              <img src={previewUrl} alt="Project preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+              <img src={previewUrl} alt='Project preview' style={{ maxWidth: '100%', maxHeight: '300px' }} />
             </div>
           ) : (
             <div className='flex items-center justify-center'>

@@ -27,6 +27,7 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
   const [errors, setErrors] = useState({
     email: '',
     password: ''
@@ -39,6 +40,7 @@ const Login = () => {
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
     return emailRegex.test(email)
   }
 
@@ -61,17 +63,19 @@ const Login = () => {
     }
 
     setErrors(newErrors)
+
     return !newErrors.email && !newErrors.password
   }
 
   const handleClickLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
 
     setIsLoading(true)
+
     try {
       await signIn(email, password)
       router.push('/home')
@@ -98,7 +102,7 @@ const Login = () => {
 
   return (
     <AuthIllustrationWrapper>
-      <Card className='flex flex-col sm:is-[450px] ' >
+      <Card className='flex flex-col sm:is-[450px] '>
         <CardContent className='sm:!p-12'>
           <div className='flex justify-center mbe-6'>
             <Logo />
@@ -146,18 +150,18 @@ const Login = () => {
                 className='text-end'
                 color='primary'
                 component={Link}
-                href={('/forgot-password')}
+                href={'/forgot-password'}
                 sx={{ pointerEvents: isLoading ? 'none' : 'auto' }}
               >
                 Forgot password?
               </Typography>
             </div>
-            <Button 
-              fullWidth 
-              variant='contained' 
+            <Button
+              fullWidth
+              variant='contained'
               type='submit'
               disabled={!!errors.email || !!errors.password || isLoading}
-              sx={{ 
+              sx={{
                 position: 'relative',
                 minHeight: '36px'
               }}
@@ -171,7 +175,7 @@ const Login = () => {
                     top: '50%',
                     left: '50%',
                     marginTop: '-12px',
-                    marginLeft: '-12px',
+                    marginLeft: '-12px'
                   }}
                 />
               ) : (
@@ -180,7 +184,7 @@ const Login = () => {
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>
-              <Typography 
+              <Typography
                 component={Link}
                 color='primary'
                 href={'/register'}
