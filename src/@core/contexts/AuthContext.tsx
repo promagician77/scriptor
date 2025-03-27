@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 
 // Supabase Imports
 import type { User } from '@supabase/supabase-js'
+
 import { createClient } from '@/configs/supabase'
 
 interface AuthContextType {
