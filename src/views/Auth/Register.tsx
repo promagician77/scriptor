@@ -5,9 +5,9 @@ import { useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@core/contexts/AuthContext'
+import { useParams, useRouter } from 'next/navigation'
+
+// External Imports
 import { toast } from 'react-toastify'
 
 // MUI Imports
@@ -25,6 +25,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
+import { useAuth } from '@core/contexts/AuthContext'
 
 // Styled Component Imports
 import AuthIllustrationWrapper from '../AuthIllustrationWrapper'
@@ -250,21 +251,16 @@ const Register = () => {
                 />
               }
               label={
-                <>
-                  <span>I agree to </span>
-                  <Link 
-                    className='text-primary' 
-                    href='/' 
-                    onClick={e => e.preventDefault()}
-                    style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
-                  >
-                    privacy policy & terms
-                  </Link>
-                </>
+                <Typography>
+                  I agree to the{' '}
+                  <Typography component={Link} href='/terms' color='primary'>
+                    terms and conditions
+                  </Typography>
+                </Typography>
               }
             />
             {errors.terms && (
-              <Typography color="error" variant="caption" className="mbs-[-1rem]">
+              <Typography color='error' variant='caption'>
                 {errors.terms}
               </Typography>
             )}
@@ -291,15 +287,15 @@ const Register = () => {
                   }}
                 />
               ) : (
-                'Sign Up'
+                'Sign up'
               )}
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>Already have an account?</Typography>
-              <Typography
+              <Typography 
                 component={Link}
-                href={'/login'}
                 color='primary'
+                href={'/login'}
                 sx={{ pointerEvents: isLoading ? 'none' : 'auto' }}
               >
                 Sign in instead

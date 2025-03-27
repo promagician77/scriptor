@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+
 import ProjectManager from '@/views/Dashboard/ProjectManager'
 
 const ProjectPage = () => {

@@ -1,12 +1,13 @@
 'use client'
 
 // React Imports
-import type { ChangeEvent } from 'react'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
 // Next Imports
-import { createClient } from '@configs/supabase'
+import { useRouter } from 'next/navigation'
+
+// External Imports
+import swal from 'sweetalert'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -18,10 +19,9 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
 
-// Component Imports
+// Internal Imports
+import { createClient } from '@configs/supabase'
 import ImageUpload from './ImageUpload'
-import swal from 'sweetalert'
-
 
 const genres = ['Romance', 'Mystery', 'Sci-Fi', 'Drama', 'Comedy', 'Horror']
 const tones = ['Light', 'Dark', 'Humorous', 'Serious', 'Mysterious']
@@ -49,7 +49,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   useEffect(() => {
     if (projectId) {
       const fetchProject = async () => {
-        const { data, error } = await supabase
+        const { data: projectData, error } = await supabase
           .from('Project')
           .select('*')
           .eq('id', projectId)
@@ -62,18 +62,18 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
             text: 'Failed to fetch project data',
             icon: 'error',
           })
-        } else if (data) {
-          setData(data)
+        } else if (projectData) {
+          setData(projectData)
           // Set preview URL if there's an existing image
-          if (data.imageUrl) {
-            setPreviewUrl(data.imageUrl)
+          if (projectData.imageUrl) {
+            setPreviewUrl(projectData.imageUrl)
           }
         }
       }
 
       fetchProject()
     }
-  }, [projectId, mode])
+  }, [projectId, mode, supabase])
 
   const handleImageSelect = (file: File) => {
     setSelectedImage(file)
@@ -248,17 +248,13 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
               )
             }
             <Button 
-              type="button" 
               variant="tonal" 
-              color="error" 
-              className='ml-4' 
-              startIcon={<i className='bx-x' />} 
-              onClick={(e) => {
-                e.preventDefault();
-                router.push('/home');
-              }}
+              color="secondary" 
+              startIcon={<i className='bx-arrow-back' />}
+              onClick={() => router.push('/home')}
+              className="mie-2"
             >
-              Cancel
+              Back
             </Button>
           </div>
         </form>

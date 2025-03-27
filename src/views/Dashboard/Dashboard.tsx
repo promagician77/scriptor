@@ -2,11 +2,13 @@
 
 // React Imports
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
 // Next Imports
 import Link from 'next/link'
-import { createClient } from '@configs/supabase'
+import { useRouter } from 'next/navigation'
+
+// External Imports
+import swal from 'sweetalert'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -17,17 +19,17 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Pagination from '@mui/material/Pagination'
 import Typography from '@mui/material/Typography'
-
-import type { ThemeColor } from '@core/types'
 import { Divider } from '@mui/material'
 
-import swal from 'sweetalert'
+// Internal Imports
+import { createClient } from '@configs/supabase'
+import type { ThemeColor } from '@core/types'
 
 const chipColor: ThemeColor[] = ["primary", "success", "error", "warning", "info"]
 
 const Dashboard = () => {
-  const supabase = createClient();
-  const router = useRouter();
+  const supabase = createClient()
+  const router = useRouter()
 
   const [projects, setProjects] = useState<any[]>([])
   const [rerender, setRerender] = useState(false)
@@ -46,7 +48,7 @@ const Dashboard = () => {
     }
 
     fetchProjects()
-  }, [rerender, activePage])
+  }, [rerender, activePage, supabase])
 
   const handleDelete = async (projectId: string) => {
     const willDelete = await swal({
