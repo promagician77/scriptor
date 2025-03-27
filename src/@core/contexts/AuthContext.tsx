@@ -1,13 +1,13 @@
 'use client'
 
-// React Imports
+// React and Next.js Imports
 import { createContext, useContext, useEffect, useState } from 'react'
-
 import { useRouter } from 'next/navigation'
 
-// Supabase Imports
+// External Imports
 import type { User } from '@supabase/supabase-js'
 
+// Internal Imports
 import { createClient } from '@/configs/supabase'
 
 interface AuthContextType {
@@ -32,13 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check active sessions and sets the user
     auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-
-      if (session) {
-        router.push('/home')
-      } else {
-        router.push('/login')
-      }
-
       setLoading(false)
     })
 
@@ -47,18 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription }
     } = auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-
-      if (session) {
-        router.push('/home')
-      } else {
-        router.push('/login')
-      }
-
       setLoading(false)
     })
 
     return () => subscription.unsubscribe()
-  }, [router, supabase])
+  }, [supabase])
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -72,7 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
       email,
-      password
+      password,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/callback`
+      }
     })
 
     if (error) throw error
@@ -80,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
-
     if (error) throw error
   }
 
