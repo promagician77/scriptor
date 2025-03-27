@@ -174,12 +174,16 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
         <form onSubmit={handleSubmit}>
           <div className='flex flex-wrap items-center justify-between gap-4'>
             <div>
-              <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : 'Create Project'}</Typography>
+              <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : mode === 'create' ? 'Create Project' : data.title}</Typography>
             </div>
             <div>
-              <Button type="submit" variant="contained" color="primary">
-                {mode === 'edit' ? 'Update' : 'Create'}
-              </Button>
+              {
+                mode !== 'show' && (
+                  <Button type="submit" variant="contained" color="primary">
+                    {mode === 'edit' ? 'Update' : 'Create'}
+                  </Button>
+                )
+              }
             </div>
           </div>
           <Divider />
