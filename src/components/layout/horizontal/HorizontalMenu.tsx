@@ -78,11 +78,8 @@ const HorizontalMenu = () => {
           menuSectionStyles: verticalMenuSectionStyles(verticalNavOptions, theme)
         }}
       >
-        <MenuItem href='/' icon={<i className='bx-home' />}>
+        <MenuItem href='/' icon={<i className='bx-dashboard' />}>
           Home
-        </MenuItem>
-        <MenuItem href='/about' icon={<i className='bx-info-circle' />}>
-          About
         </MenuItem>
       </Menu>
       {/* <Menu

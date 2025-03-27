@@ -24,6 +24,7 @@ import CustomAvatar from '@core/components/mui/Avatar'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+import { useAuth } from '@core/contexts/AuthContext'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -44,6 +45,7 @@ const UserDropdown = () => {
 
   // Hooks
   const router = useRouter()
+  const { signOut } = useAuth()
 
   const { settings } = useSettings()
 
@@ -64,8 +66,12 @@ const UserDropdown = () => {
   }
 
   const handleUserLogout = async () => {
-    // Redirect to login page
-    router.push('/login')
+    try {
+      await signOut()
+      router.push('/login')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
   }
 
   return (

@@ -7,13 +7,16 @@ import type { ChildrenType } from '@core/types'
 // Style Imports
 import '@/app/globals.css'
 
+
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 
+import { AuthProvider } from '@core/contexts/AuthContext'
+
 export const metadata = {
-  title: 'Sneat - MUI Next.js Admin Dashboard Template',
+  title: 'Scriptor',
   description:
-    'Sneat - MUI Next.js Admin Dashboard Template - is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.'
+    'Scriptor is a platform for creating and managing your scripts.'
 }
 
 const RootLayout = ({ children }: ChildrenType) => {
@@ -21,8 +24,12 @@ const RootLayout = ({ children }: ChildrenType) => {
   const direction = 'ltr'
 
   return (
-    <html id='__next' lang='en' dir={direction}>
-      <body className='flex is-full min-bs-full flex-auto flex-col'>{children}</body>
+    <html id='__next' lang='en' dir={direction}>  
+      <body className='flex is-full min-bs-full flex-auto flex-col'>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   )
 }
