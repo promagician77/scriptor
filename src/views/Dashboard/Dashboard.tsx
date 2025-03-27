@@ -23,23 +23,15 @@ import { Divider } from '@mui/material'
 
 import swal from 'sweetalert'
 
-type ChipColorType = {
-  color: ThemeColor
-}
-
 const chipColor: ThemeColor[] = ["primary", "success", "error", "warning", "info"]
 
 const Dashboard = () => {
   const supabase = createClient();
   const router = useRouter();
 
-  // States
   const [projects, setProjects] = useState<any[]>([])
   const [rerender, setRerender] = useState(false)
   const [activePage, setActivePage] = useState(0)
-
-
-  // Hooks
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -49,7 +41,6 @@ const Dashboard = () => {
       if (error) {
         console.error('Error fetching projects:', error)
       } else {
-        console.log(data)
         setProjects(data)
       }
     }
@@ -58,7 +49,6 @@ const Dashboard = () => {
   }, [rerender, activePage])
 
   const handleDelete = async (projectId: string) => {
-    // Show confirmation dialog
     const willDelete = await swal({
       title: 'Delete Project?',
       text: 'Are you sure you want to delete this project? This action cannot be undone.',
@@ -69,7 +59,6 @@ const Dashboard = () => {
 
     if (willDelete) {
       try {
-        // Show loading state
         swal({
           title: 'Deleting project...',
           text: 'Please wait...',
@@ -90,7 +79,6 @@ const Dashboard = () => {
           icon: 'success',
         });
 
-        // Trigger rerender to refresh the project list
         setRerender(prev => !prev);
       } catch (error) {
         console.error('Error:', error);
@@ -123,32 +111,7 @@ const Dashboard = () => {
               Create
             </Button>
           </div>
-          {/* <div className='flex flex-wrap items-center gap-y-4 gap-x-6'>
-            <CustomTextField
-              select
-              fullWidth
-              id='select-course'
-              value={course}
-              onChange={e => {
-                setCourse(e.target.value)
-                setActivePage(0)
-              }}
-              className='is-[250px] flex-auto'
-            >
-              <MenuItem value='All'>All Courses</MenuItem>
-              <MenuItem value='Web'>Web</MenuItem>
-              <MenuItem value='Art'>Art</MenuItem>
-              <MenuItem value='UI/UX'>UI/UX</MenuItem>
-              <MenuItem value='Psychology'>Psychology</MenuItem>
-              <MenuItem value='Design'>Design</MenuItem>
-            </CustomTextField>
-            <FormControlLabel
-              control={<Switch onChange={handleChange} checked={hideCompleted} />}
-              label='Hide completed'
-            />
-          </div> */}
         </div>
-        {/* {data.length > 0 ? ( */}
         <Divider />
         <Grid container spacing={2} className='mt-4'>
         {
@@ -189,20 +152,13 @@ const Dashboard = () => {
                     >
                       {project.title}
                     </Typography>
-                    <Typography>Introductory course for Angular and framework basics with TypeScript</Typography>
+                    <Typography>{project.concept}</Typography>
                   </div>
                   <div className='flex flex-col gap-1'>
-                    {/* {item.completedTasks === item.totalTasks ? (
-                      <div className='flex items-center gap-1'>
-                        <i className='bx-check text-xl text-success' />
-                        <Typography color='success.main'>Completed</Typography>
-                      </div>
-                    ) : ( */}
                       <div className='flex items-center gap-1'>
                         <i className='bx-time-five text-xl' />
                         <Typography>{`20h 46m`}</Typography>
                       </div>
-                    {/* )} */}
                     <LinearProgress
                       color='primary'
                       value={Math.floor(80)}
@@ -210,16 +166,6 @@ const Dashboard = () => {
                       className='is-full bs-2'
                     />
                   </div>
-                  {/* {item.completedTasks === item.totalTasks ? (
-                    <Button
-                      variant='tonal'
-                      startIcon={<i className='bx-rotate-right' />}
-                      component={Link}
-                      href={`/apps/academy/course-details`}
-                    >
-                      Start Over
-                    </Button>
-                  ) : ( */}
                     <div className='flex flex-wrap gap-4'>
                       <Button
                         fullWidth
@@ -237,7 +183,7 @@ const Dashboard = () => {
                         color='error'
                         endIcon={<i className='bx-trash' />}
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click event
+                          e.stopPropagation(); 
                           handleDelete(project.id);
                         }}
                         className='is-auto flex-auto'
@@ -252,9 +198,6 @@ const Dashboard = () => {
           ))
         }
         </Grid>
-        {/* ) : (
-          <Typography className='text-center'>No courses found</Typography>
-        )} */}
         <div className='flex justify-center'>
           <Pagination
             count={Math.ceil(projects.length / 6)}

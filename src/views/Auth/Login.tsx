@@ -25,29 +25,70 @@ const Login = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState({
+    email: '',
+    password: ''
+  })
 
   const { signIn } = useAuth()
   const router = useRouter()
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const validateForm = () => {
+    const newErrors = {
+      email: '',
+      password: ''
+    }
+
+    if (!email) {
+      newErrors.email = 'Email is required'
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email address'
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required'
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters'
+    }
+
+    setErrors(newErrors)
+    return !newErrors.email && !newErrors.password
+  }
+
   const handleClickLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    if (!validateForm()) {
+      return
+    }
+
     try {
       await signIn(email, password)
       router.push('/home')
     } catch (error) {
       console.error('Error signing in:', error)
+      setErrors(prev => ({
+        ...prev,
+        email: 'Invalid email or password'
+      }))
     }
   }
 
   const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
+    setErrors(prev => ({ ...prev, email: '' }))
   }
 
   const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value)
+    setErrors(prev => ({ ...prev, password: '' }))
   }
 
   return (
@@ -65,10 +106,12 @@ const Login = () => {
             <CustomTextField
               autoFocus
               fullWidth
-              label='Email or Username'
-              placeholder='Enter your email or username'
+              label='Email'
+              placeholder='Enter your email'
               value={email}
               onChange={handleChangeEmail}
+              error={!!errors.email}
+              helperText={errors.email}
             />
             <CustomTextField
               fullWidth
@@ -78,6 +121,8 @@ const Login = () => {
               value={password}
               onChange={handleChangePassword}
               type={isPasswordShown ? 'text' : 'password'}
+              error={!!errors.password}
+              helperText={errors.password}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -99,7 +144,12 @@ const Login = () => {
                 Forgot password?
               </Typography>
             </div>
-            <Button fullWidth variant='contained' type='submit'>
+            <Button 
+              fullWidth 
+              variant='contained' 
+              type='submit'
+              disabled={!!errors.email || !!errors.password}
+            >
               Login
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
