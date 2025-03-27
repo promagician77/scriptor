@@ -47,9 +47,11 @@ const Dropzone = styled(AppReactDropzone)<BoxProps>(({ theme }) => ({
 
 interface ProductImageProps {
   onImageSelect: (file: File) => void
+  previewUrl?: string
+  isReadOnly?: boolean
 }
 
-const ProductImage = ({ onImageSelect }: ProductImageProps) => {
+const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProps) => {
   // States
   const [files, setFiles] = useState<File[]>([])
 
@@ -61,7 +63,8 @@ const ProductImage = ({ onImageSelect }: ProductImageProps) => {
       if (acceptedFiles.length > 0) {
         onImageSelect(acceptedFiles[0])
       }
-    }
+    },
+    disabled: isReadOnly
   })
 
   const renderFilePreview = (file: FileProp) => {
@@ -73,6 +76,7 @@ const ProductImage = ({ onImageSelect }: ProductImageProps) => {
   }
 
   const handleRemoveFile = (file: FileProp) => {
+    if (isReadOnly) return
     const uploadedFiles = files
     const filtered = uploadedFiles.filter((i: FileProp) => i.name !== file.name)
 
@@ -94,13 +98,16 @@ const ProductImage = ({ onImageSelect }: ProductImageProps) => {
           </Typography>
         </div>
       </div>
-      <IconButton onClick={() => handleRemoveFile(file)}>
-        <i className='bx-x text-xl' />
-      </IconButton>
+      {!isReadOnly && (
+        <IconButton onClick={() => handleRemoveFile(file)}>
+          <i className='bx-x text-xl' />
+        </IconButton>
+      )}
     </ListItem>
   ))
 
   const handleRemoveAllFiles = () => {
+    if (isReadOnly) return
     setFiles([])
   }
 
@@ -110,27 +117,39 @@ const ProductImage = ({ onImageSelect }: ProductImageProps) => {
         <CardHeader
           title='Product Image'
           action={
-            <Typography component={Link} color='primary' className='font-medium'>
-              Add media from URL
-            </Typography>
+            !isReadOnly && (
+              <Typography component={Link} color='primary' className='font-medium'>
+                Add media from URL
+              </Typography>
+            )
           }
           sx={{ '& .MuiCardHeader-action': { alignSelf: 'center' } }}
         />
         <CardContent>
-          <div {...getRootProps({ className: 'dropzone' })}>
-            <input {...getInputProps()} />
-            <div className='flex items-center flex-col gap-2 text-center'>
-              <CustomAvatar variant='rounded' skin='light' color='secondary' size={40}>
-                <i className='bx-upload' />
-              </CustomAvatar>
-              <Typography variant='h4'>Drag and Drop Your Image Here.</Typography>
-              <Typography color='text.disabled'>or</Typography>
-              <Button variant='tonal' size='small'>
-                Browse Image
-              </Button>
+          {!isReadOnly ? (
+            <div {...getRootProps({ className: 'dropzone' })}>
+              <input {...getInputProps()} />
+              <div className='flex items-center flex-col gap-2 text-center'>
+                <CustomAvatar variant='rounded' skin='light' color='secondary' size={40}>
+                  <i className='bx-upload' />
+                </CustomAvatar>
+                <Typography variant='h4'>Drag and Drop Your Image Here.</Typography>
+                <Typography color='text.disabled'>or</Typography>
+                <Button variant='tonal' size='small'>
+                  Browse Image
+                </Button>
+              </div>
             </div>
-          </div>
-          {files.length ? (
+          ) : previewUrl ? (
+            <div className='flex items-center justify-center'>
+              <img src={previewUrl} alt="Project preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+            </div>
+          ) : (
+            <div className='flex items-center justify-center'>
+              <Typography color='text.disabled'>No image available</Typography>
+            </div>
+          )}
+          {files.length && !isReadOnly ? (
             <>
               <List>{fileList}</List>
               <div className='buttons'>
@@ -147,4 +166,4 @@ const ProductImage = ({ onImageSelect }: ProductImageProps) => {
   )
 }
 
-export default ProductImage
+export default ImageUpload

@@ -6,35 +6,20 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 // Next Imports
-import Link from 'next/link'
 import { createClient } from '@configs/supabase'
-import { useParams } from 'next/navigation'
-import { toast } from 'react-toastify'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
-import Pagination from '@mui/material/Pagination'
-import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
-import Box from '@mui/material/Box'
-
-// Type Imports
-import type { Course } from '@/types/projectTypes'
-import type { ThemeColor } from '@core/types'
 
 // Component Imports
 import ImageUpload from './ImageUpload'
-import CreateProjectModal from './CreateProjectModal'
 import swal from 'sweetalert'
 
 
@@ -62,7 +47,33 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
   const [previewUrl, setPreviewUrl] = useState<string>('')
 
   useEffect(() => {
-    // ... existing fetch project code ...
+    if (projectId) {
+      console.log(mode)
+      const fetchProject = async () => {
+        const { data, error } = await supabase
+          .from('Project')
+          .select('*')
+          .eq('id', projectId)
+          .single()
+
+        if (error) {
+          console.error('Error fetching project:', error)
+          await swal({
+            title: 'Error!',
+            text: 'Failed to fetch project data',
+            icon: 'error',
+          })
+        } else if (data) {
+          setData(data)
+          // Set preview URL if there's an existing image
+          if (data.imageUrl) {
+            setPreviewUrl(data.imageUrl)
+          }
+        }
+      }
+
+      fetchProject()
+    }
   }, [projectId, mode])
 
   const handleImageSelect = (file: File) => {
@@ -99,22 +110,18 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
           closeOnClickOutside: false,
         })
 
-        // Handle image upload if there's a new image
         let imageUrl = data.imageUrl
         if (selectedImage) {
-          // Upload to 'scriptor' bucket in the 'image' folder
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('scriptor')
             .upload(`${Date.now()}-${selectedImage.name}`, selectedImage)
 
           if (uploadError) throw uploadError
 
-          // Get the complete public URL for the uploaded image
           const { data: publicUrlData } = supabase.storage
             .from('scriptor')
             .getPublicUrl(uploadData.path)
 
-          // Store the complete public URL
           imageUrl = publicUrlData.publicUrl
         }
 
@@ -122,8 +129,6 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
           ...data,
           imageUrl
         }
-
-        console.log(submitData)
 
         if (mode === 'edit') {
           const { error } = await supabase
@@ -181,7 +186,11 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
           <Divider />
           <Grid container spacing={2} className='mt-4'>
               <Grid item xs={12} md={7}>
-                  <ImageUpload onImageSelect={handleImageSelect} />
+                  <ImageUpload 
+                    onImageSelect={handleImageSelect} 
+                    previewUrl={previewUrl}
+                    isReadOnly={isReadOnly}
+                  />
               </Grid>
               <Divider orientation='vertical' flexItem className='pl-3'/>
               <Grid item xs={12} md={4.88} className='pl-3 space-y-5'>
@@ -191,6 +200,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
                       name='title'
                       value={data.title}
                       onChange={handleChange}
+                      disabled={isReadOnly}
                   />
                   <TextField
                       fullWidth

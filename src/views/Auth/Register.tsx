@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@core/contexts/AuthContext'
+import { toast } from 'react-toastify'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -19,6 +20,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
@@ -36,6 +38,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [username, setUsername] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({
     username: '',
     email: '',
@@ -111,15 +114,31 @@ const Register = () => {
       return
     }
 
+    setIsLoading(true)
     try {
       await signUp(email, password)
-      router.push('/login?message=Check your email to confirm your account')
+      console.log('success')
+      toast.success('Registration successful! Please check your email to confirm your account.')
+      // Wait for the success message to be shown before redirecting
+      setTimeout(() => {
+        router.push('/login?message=Check your email to confirm your account')
+      }, 2000)
     } catch (error) {
       console.error('Error signing up:', error)
       setErrors(prev => ({
         ...prev,
         email: 'This email is already registered'
       }))
+      toast.error('Registration failed. This email is already registered.', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -169,6 +188,7 @@ const Register = () => {
               onChange={handleChangeUsername}
               error={!!errors.username}
               helperText={errors.username}
+              disabled={isLoading}
             />
             <CustomTextField 
               fullWidth 
@@ -178,6 +198,7 @@ const Register = () => {
               onChange={handleChangeEmail}
               error={!!errors.email}
               helperText={errors.email}
+              disabled={isLoading}
             />
             <CustomTextField
               fullWidth
@@ -188,6 +209,7 @@ const Register = () => {
               onChange={handleChangePassword}
               error={!!errors.password}
               helperText={errors.password}
+              disabled={isLoading}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -207,6 +229,7 @@ const Register = () => {
               onChange={handleChangeConfirmPassword}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
+              disabled={isLoading}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -223,12 +246,18 @@ const Register = () => {
                   checked={termsAccepted}
                   onChange={handleTermsChange}
                   color={errors.terms ? 'error' : 'primary'}
+                  disabled={isLoading}
                 />
               }
               label={
                 <>
                   <span>I agree to </span>
-                  <Link className='text-primary' href='/' onClick={e => e.preventDefault()}>
+                  <Link 
+                    className='text-primary' 
+                    href='/' 
+                    onClick={e => e.preventDefault()}
+                    style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
+                  >
                     privacy policy & terms
                   </Link>
                 </>
@@ -243,9 +272,27 @@ const Register = () => {
               fullWidth 
               variant='contained' 
               type='submit'
-              disabled={!!Object.values(errors).some(error => error !== '')}
+              disabled={!!Object.values(errors).some(error => error !== '') || isLoading}
+              sx={{ 
+                position: 'relative',
+                minHeight: '36px'
+              }}
             >
-              Sign Up
+              {isLoading ? (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    color: 'inherit',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              ) : (
+                'Sign Up'
+              )}
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>Already have an account?</Typography>
@@ -253,22 +300,23 @@ const Register = () => {
                 component={Link}
                 href={'/login'}
                 color='primary'
+                sx={{ pointerEvents: isLoading ? 'none' : 'auto' }}
               >
                 Sign in instead
               </Typography>
             </div>
             <Divider className='gap-2 text-textPrimary'>or</Divider>
             <div className='flex justify-center items-center gap-1.5'>
-              <IconButton className='text-facebook' size='small'>
+              <IconButton className='text-facebook' size='small' disabled={isLoading}>
                 <i className='bx-bxl-facebook-circle' />
               </IconButton>
-              <IconButton className='text-twitter' size='small'>
+              <IconButton className='text-twitter' size='small' disabled={isLoading}>
                 <i className='bx-bxl-twitter' />
               </IconButton>
-              <IconButton className='text-textPrimary' size='small'>
+              <IconButton className='text-textPrimary' size='small' disabled={isLoading}>
                 <i className='bx-bxl-github' />
               </IconButton>
-              <IconButton className='text-error' size='small'>
+              <IconButton className='text-error' size='small' disabled={isLoading}>
                 <i className='bx-bxl-google' />
               </IconButton>
             </div>

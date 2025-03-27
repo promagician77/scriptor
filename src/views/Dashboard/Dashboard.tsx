@@ -119,7 +119,12 @@ const Dashboard = () => {
             <Grid item xs={12} md={4}>
               <div 
                 className='border rounded bs-full'
-                onClick={() => router.push(`/home/${project.id}`)}
+                onClick={(e) => {
+                  // Only navigate if the click is not on a button
+                  if (!(e.target as HTMLElement).closest('button')) {
+                    router.push(`/home/${project.id}/show`)
+                  }
+                }}
                 style={{ cursor: 'pointer' }}
               >
                 <div className='pli-2 pbs-2'>
@@ -172,7 +177,10 @@ const Dashboard = () => {
                         variant='tonal'
                         color='primary'
                         startIcon={<i className='bx-edit-alt' />}
-                        onClick={() => router.push(`/home/${project.id}/edit`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/home/${project.id}/edit`);
+                        }}
                         className='is-auto flex-auto'
                       >
                         Edit
