@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         router.push('/home')
       } else {
-        router.push('/login')
+        router.push('/')
       }
 
       setLoading(false)
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         router.push('/home')
       } else {
-        router.push('/login')
+        router.push('/')
       }
 
       setLoading(false)
