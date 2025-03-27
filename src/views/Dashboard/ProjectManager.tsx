@@ -48,7 +48,6 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
 
   useEffect(() => {
     if (projectId) {
-      console.log(mode)
       const fetchProject = async () => {
         const { data, error } = await supabase
           .from('Project')
@@ -104,7 +103,7 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
     if (willCreate) {
       try {
         swal({
-          title: 'Creating project...',
+          title: mode === 'create' ? 'Creating project...' : 'Updating project...',
           text: 'Please wait...',
           icon: 'info',
           closeOnClickOutside: false,

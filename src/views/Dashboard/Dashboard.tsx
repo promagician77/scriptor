@@ -116,7 +116,7 @@ const Dashboard = () => {
         <Grid container spacing={2} className='mt-4'>
         {
           projects.map((project) => (
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} key={project.id}>
               <div 
                 className='border rounded bs-full'
                 onClick={(e) => {
@@ -127,10 +127,10 @@ const Dashboard = () => {
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <div className='pli-2 pbs-2'>
+                <div className='pli-2 pbs-2 border-radius-10'>
                   <img 
                     src={project.imageUrl} 
-                    className='is-full' 
+                    className='is-full max-h-50 max-w-full border-radius-10' 
                     alt={project.title}
                   />
                 </div>
