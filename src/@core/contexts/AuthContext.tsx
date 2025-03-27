@@ -1,11 +1,13 @@
 'use client'
 
-// React Imports
+// React and Next.js Imports
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-// Supabase Imports
+// External Imports
 import type { User } from '@supabase/supabase-js'
+
+// Internal Imports
 import { createClient } from '@/configs/supabase'
 
 interface AuthContextType {
