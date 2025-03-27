@@ -45,14 +45,18 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/register') ||
     request.nextUrl.pathname.startsWith('/auth/callback')
 
-  if (!session && !isAuthPage) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+  // Allow access to landing page without auth
+  const isLandingPage = request.nextUrl.pathname === '/'
 
   // If user is signed in and the current path is /login or /register,
   // redirect the user to /home
   if (session && isAuthPage) {
     return NextResponse.redirect(new URL('/home', request.url))
+  }
+
+  // Only redirect to landing page if trying to access protected routes
+  if (!session && !isAuthPage && !isLandingPage) {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   return response
