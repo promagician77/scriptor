@@ -102,7 +102,7 @@ const Dashboard = () => {
           <div>
             <Button
               fullWidth
-              variant='outlined'
+              variant='tonal'
               color='primary'
               startIcon={<i className='bx-plus' />}
               className='is-auto flex-auto'

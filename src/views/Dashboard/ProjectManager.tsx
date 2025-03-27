@@ -176,15 +176,6 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
             <div>
               <Typography variant='h3'>{mode === 'edit' ? 'Edit Project' : mode === 'create' ? 'Create Project' : data.title}</Typography>
             </div>
-            <div>
-              {
-                mode !== 'show' && (
-                  <Button type="submit" variant="contained" color="primary">
-                    {mode === 'edit' ? 'Update' : 'Create'}
-                  </Button>
-                )
-              }
-            </div>
           </div>
           <Divider />
           <Grid container spacing={2} className='mt-4'>
@@ -247,6 +238,19 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
                   />
               </Grid>
           </Grid>
+          <Divider flexItem className='mt-4 mb-4'/>
+          <div className='flex justify-end'>
+            {
+              mode !== 'show' && (
+                <Button type="submit" variant="tonal" color="primary" startIcon={mode === 'edit' ? <i className='bx-edit-alt' /> : <i className='bx-plus' />}>
+                  {mode === 'edit' ? 'Update' : 'Create'}
+                </Button>
+              )
+            }
+            <Button type="submit" variant="tonal" color="error" className='ml-4' startIcon={<i className='bx-x' />}>
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
