@@ -14,6 +14,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
@@ -25,6 +26,7 @@ const Login = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({
     email: '',
     password: ''
@@ -69,6 +71,7 @@ const Login = () => {
       return
     }
 
+    setIsLoading(true)
     try {
       await signIn(email, password)
       router.push('/home')
@@ -78,6 +81,8 @@ const Login = () => {
         ...prev,
         email: 'Invalid email or password'
       }))
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -112,6 +117,7 @@ const Login = () => {
               onChange={handleChangeEmail}
               error={!!errors.email}
               helperText={errors.email}
+              disabled={isLoading}
             />
             <CustomTextField
               fullWidth
@@ -123,6 +129,7 @@ const Login = () => {
               type={isPasswordShown ? 'text' : 'password'}
               error={!!errors.password}
               helperText={errors.password}
+              disabled={isLoading}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
@@ -134,12 +141,13 @@ const Login = () => {
               }}
             />
             <div className='flex justify-between items-center gap-x-3 gap-y-1 flex-wrap'>
-              <FormControlLabel control={<Checkbox />} label='Remember me' />
+              <FormControlLabel control={<Checkbox disabled={isLoading} />} label='Remember me' />
               <Typography
                 className='text-end'
                 color='primary'
                 component={Link}
                 href={('/forgot-password')}
+                sx={{ pointerEvents: isLoading ? 'none' : 'auto' }}
               >
                 Forgot password?
               </Typography>
@@ -148,9 +156,27 @@ const Login = () => {
               fullWidth 
               variant='contained' 
               type='submit'
-              disabled={!!errors.email || !!errors.password}
+              disabled={!!errors.email || !!errors.password || isLoading}
+              sx={{ 
+                position: 'relative',
+                minHeight: '36px'
+              }}
             >
-              Login
+              {isLoading ? (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    color: 'inherit',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              ) : (
+                'Login'
+              )}
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>
@@ -158,22 +184,23 @@ const Login = () => {
                 component={Link}
                 color='primary'
                 href={'/register'}
+                sx={{ pointerEvents: isLoading ? 'none' : 'auto' }}
               >
                 Create an account
               </Typography>
             </div>
             <Divider className='gap-2 text-textPrimary'>or</Divider>
             <div className='flex justify-center items-center gap-1.5'>
-              <IconButton className='text-facebook' size='small'>
+              <IconButton className='text-facebook' size='small' disabled={isLoading}>
                 <i className='bx-bxl-facebook-circle' />
               </IconButton>
-              <IconButton className='text-twitter' size='small'>
+              <IconButton className='text-twitter' size='small' disabled={isLoading}>
                 <i className='bx-bxl-twitter' />
               </IconButton>
-              <IconButton className='text-textPrimary' size='small'>
+              <IconButton className='text-textPrimary' size='small' disabled={isLoading}>
                 <i className='bx-bxl-github' />
               </IconButton>
-              <IconButton className='text-error' size='small'>
+              <IconButton className='text-error' size='small' disabled={isLoading}>
                 <i className='bx-bxl-google' />
               </IconButton>
             </div>
