@@ -118,7 +118,7 @@ const Dashboard = () => {
           projects.map((project) => (
             <Grid item xs={12} md={4} key={project.id}>
               <div 
-                className='border rounded bs-full'
+                className='border rounded bs-full h-[600px] flex flex-col'
                 onClick={(e) => {
                   // Only navigate if the click is not on a button
                   if (!(e.target as HTMLElement).closest('button')) {
@@ -127,14 +127,14 @@ const Dashboard = () => {
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <div className='pli-2 pbs-2 border-radius-10'>
+                <div className='pli-2 pbs-2 border-radius-10 h-[250px]'>
                   <img 
                     src={project.imageUrl} 
-                    className='is-full max-h-50 max-w-full border-radius-10' 
+                    className='w-full h-full object-cover border-radius-10' 
                     alt={project.title}
                   />
                 </div>
-                <div className='flex flex-col gap-4 p-6'>
+                <div className='flex flex-col gap-4 p-6 flex-1'>
                   <div className='flex items-center justify-between'>
                     <Chip 
                       label={project.genre} 
@@ -153,13 +153,13 @@ const Dashboard = () => {
                       variant='h5'
                       component={Link}
                       href={`/apps/academy/course-details`}
-                      className='hover:text-primary'
+                      className='hover:text-primary line-clamp-1'
                     >
                       {project.title}
                     </Typography>
-                    <Typography>{project.concept}</Typography>
+                    <Typography className='line-clamp-2 h-[48px]'>{project.concept}</Typography>
                   </div>
-                  <div className='flex flex-col gap-1'>
+                  <div className='flex flex-col gap-1 mt-auto'>
                       <div className='flex items-center gap-1'>
                         <i className='bx-time-five text-xl' />
                         <Typography>{`20h 46m`}</Typography>
