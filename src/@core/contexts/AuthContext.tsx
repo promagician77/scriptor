@@ -1,13 +1,13 @@
 'use client'
 
-// React and Next.js Imports
+// React Imports
 import { createContext, useContext, useEffect, useState } from 'react'
+
 import { useRouter } from 'next/navigation'
 
-// External Imports
+// Supabase Imports
 import type { User } from '@supabase/supabase-js'
 
-// Internal Imports
 import { createClient } from '@/configs/supabase'
 
 interface AuthContextType {
@@ -43,7 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription }
+    } = auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
 
       if (session) {
@@ -82,11 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
   }
 
-  return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

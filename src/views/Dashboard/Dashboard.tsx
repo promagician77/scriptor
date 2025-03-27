@@ -25,7 +25,7 @@ import { Divider } from '@mui/material'
 import { createClient } from '@configs/supabase'
 import type { ThemeColor } from '@core/types'
 
-const chipColor: ThemeColor[] = ["primary", "success", "error", "warning", "info"]
+const chipColor: ThemeColor[] = ['primary', 'success', 'error', 'warning', 'info']
 
 const Dashboard = () => {
   const supabase = createClient()
@@ -37,9 +37,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const { data, error } = await supabase
-        .from('Project')
-        .select('*')
+      const { data, error } = await supabase.from('Project').select('*')
+
       if (error) {
         console.error('Error fetching projects:', error)
       } else {
@@ -56,8 +55,8 @@ const Dashboard = () => {
       text: 'Are you sure you want to delete this project? This action cannot be undone.',
       icon: 'warning',
       buttons: ['Cancel', 'Yes, delete it!'],
-      dangerMode: true,
-    });
+      dangerMode: true
+    })
 
     if (willDelete) {
       try {
@@ -65,33 +64,30 @@ const Dashboard = () => {
           title: 'Deleting project...',
           text: 'Please wait...',
           icon: 'info',
-          closeOnClickOutside: false,
-        });
+          closeOnClickOutside: false
+        })
 
-        const { error } = await supabase
-          .from('Project')
-          .delete()
-          .eq('id', projectId);
+        const { error } = await supabase.from('Project').delete().eq('id', projectId)
 
-        if (error) throw error;
+        if (error) throw error
 
         await swal({
           title: 'Success!',
           text: 'Project deleted successfully',
-          icon: 'success',
-        });
+          icon: 'success'
+        })
 
-        setRerender(prev => !prev);
+        setRerender(prev => !prev)
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
         await swal({
           title: 'Error!',
           text: 'Error deleting project',
-          icon: 'error',
-        });
+          icon: 'error'
+        })
       }
     }
-  };
+  }
 
   return (
     <Card className='w-full h-full'>
@@ -116,12 +112,11 @@ const Dashboard = () => {
         </div>
         <Divider />
         <Grid container spacing={2} className='mt-4'>
-        {
-          projects.map((project) => (
+          {projects.map(project => (
             <Grid item xs={12} md={4} key={project.id}>
-              <div 
+              <div
                 className='border rounded bs-full h-[600px] flex flex-col'
-                onClick={(e) => {
+                onClick={e => {
                   // Only navigate if the click is not on a button
                   if (!(e.target as HTMLElement).closest('button')) {
                     router.push(`/home/${project.id}/show`)
@@ -130,19 +125,19 @@ const Dashboard = () => {
                 style={{ cursor: 'pointer' }}
               >
                 <div className='pli-2 pbs-2 border-radius-10 h-[250px]'>
-                  <img 
-                    src={project.imageUrl} 
-                    className='w-full h-full object-cover border-radius-10' 
+                  <img
+                    src={project.imageUrl}
+                    className='w-full h-full object-cover border-radius-10'
                     alt={project.title}
                   />
                 </div>
                 <div className='flex flex-col gap-4 p-6 flex-1'>
                   <div className='flex items-center justify-between'>
-                    <Chip 
-                      label={project.genre} 
-                      variant='tonal' 
-                      size='small' 
-                      color={chipColor[project.id % chipColor.length] as ThemeColor} 
+                    <Chip
+                      label={project.genre}
+                      variant='tonal'
+                      size='small'
+                      color={chipColor[project.id % chipColor.length] as ThemeColor}
                     />
                     <div className='flex items-start'>
                       <Typography className='font-medium mie-1'>4.8</Typography>
@@ -162,10 +157,10 @@ const Dashboard = () => {
                     <Typography className='line-clamp-2 h-[48px]'>{project.concept}</Typography>
                   </div>
                   <div className='flex flex-col gap-1 mt-auto'>
-                      <div className='flex items-center gap-1'>
-                        <i className='bx-time-five text-xl' />
-                        <Typography>{`20h 46m`}</Typography>
-                      </div>
+                    <div className='flex items-center gap-1'>
+                      <i className='bx-time-five text-xl' />
+                      <Typography>{`20h 46m`}</Typography>
+                    </div>
                     <LinearProgress
                       color='primary'
                       value={Math.floor(80)}
@@ -173,40 +168,39 @@ const Dashboard = () => {
                       className='is-full bs-2'
                     />
                   </div>
-                    <div className='flex flex-wrap gap-4'>
-                      <Button
-                        fullWidth
-                        variant='tonal'
-                        color='primary'
-                        startIcon={<i className='bx-edit-alt' />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/home/${project.id}/edit`);
-                        }}
-                        className='is-auto flex-auto'
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        fullWidth
-                        variant='tonal'
-                        color='error'
-                        startIcon={<i className='bx-trash' />}
-                        onClick={(e) => {
-                          e.stopPropagation(); 
-                          handleDelete(project.id);
-                        }}
-                        className='is-auto flex-auto'
-                      >
-                        Delete
-                      </Button>
-                    </div>
+                  <div className='flex flex-wrap gap-4'>
+                    <Button
+                      fullWidth
+                      variant='tonal'
+                      color='primary'
+                      startIcon={<i className='bx-edit-alt' />}
+                      onClick={e => {
+                        e.stopPropagation()
+                        router.push(`/home/${project.id}/edit`)
+                      }}
+                      className='is-auto flex-auto'
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      fullWidth
+                      variant='tonal'
+                      color='error'
+                      startIcon={<i className='bx-trash' />}
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleDelete(project.id)
+                      }}
+                      className='is-auto flex-auto'
+                    >
+                      Delete
+                    </Button>
+                  </div>
                   {/* )} */}
                 </div>
               </div>
             </Grid>
-          ))
-        }
+          ))}
         </Grid>
         <div className='flex justify-center'>
           <Pagination

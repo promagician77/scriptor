@@ -61,6 +61,7 @@ const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProp
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles: File[]) => {
       setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
+
       // Send the first file to parent component
       if (acceptedFiles.length > 0) {
         onImageSelect(acceptedFiles[0])
@@ -120,7 +121,7 @@ const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProp
           title='Product Image'
           action={
             !isReadOnly && (
-              <Link href="#" className='text-primary font-medium'>
+              <Link href='#' className='text-primary font-medium'>
                 Add media from URL
               </Link>
             )
@@ -144,7 +145,7 @@ const ImageUpload = ({ onImageSelect, previewUrl, isReadOnly }: ProductImageProp
             </div>
           ) : previewUrl ? (
             <div className='flex items-center justify-center'>
-              <img src={previewUrl} alt="Project preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+              <img src={previewUrl} alt='Project preview' style={{ maxWidth: '100%', maxHeight: '300px' }} />
             </div>
           ) : (
             <div className='flex items-center justify-center'>
