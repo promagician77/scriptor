@@ -1,6 +1,5 @@
-import { NextResponse, type NextRequest } from 'next/server'
-
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
@@ -39,13 +38,19 @@ export async function middleware(request: NextRequest) {
     data: { session }
   } = await supabase.auth.getSession()
 
-  // If there's no session and the user is trying to access a protected route
-  if (!session && request.nextUrl.pathname.startsWith('/home')) {
+  // Auth condition
+  const isAuthPage =
+    request.nextUrl.pathname.startsWith('/login') ||
+    request.nextUrl.pathname.startsWith('/register') ||
+    request.nextUrl.pathname.startsWith('/auth/callback')
+
+  if (!session && !isAuthPage) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // If there's a session and the user is trying to access auth routes
-  if (session && (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register'))) {
+  // If user is signed in and the current path is /login or /register,
+  // redirect the user to /home
+  if (session && isAuthPage) {
     return NextResponse.redirect(new URL('/home', request.url))
   }
 
