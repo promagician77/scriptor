@@ -186,7 +186,7 @@ const Dashboard = () => {
                       fullWidth
                       variant='tonal'
                       color='error'
-                      startIcon={<i className='bx-trash' />}
+                      endIcon={<i className='bx-trash' />}
                       onClick={e => {
                         e.stopPropagation()
                         handleDelete(project.id)
