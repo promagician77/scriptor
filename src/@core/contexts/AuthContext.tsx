@@ -70,8 +70,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string) => {
-    // Get the correct redirect URL for the current environment
-    const redirectUrl = getRedirectURL()
+    // For signup redirect, we will explicitly use the production URL
+    const redirectUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://scriptor-kappa.vercel.app'
+        : typeof window !== 'undefined'
+          ? window.location.origin
+          : 'http://localhost:3000')
+
+    console.log('Using redirect URL:', redirectUrl) // For debugging
 
     const { error } = await supabase.auth.signUp({
       email,

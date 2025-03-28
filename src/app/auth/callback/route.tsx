@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers'
-
 import { NextResponse } from 'next/server'
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
@@ -36,7 +35,9 @@ export async function GET(request: Request) {
   }
 
   // Determine the appropriate redirect URL based on environment and request
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.NODE_ENV === 'production' ? 'https://scriptor-kappa.vercel.app' : requestUrl.origin)
 
   return NextResponse.redirect(`${siteUrl}/home`)
 }
