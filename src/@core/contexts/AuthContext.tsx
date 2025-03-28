@@ -1,17 +1,16 @@
 'use client'
 
-// React Imports
 import { createContext, useContext, useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
-// Supabase Imports
-import type { User } from '@supabase/supabase-js'
+import type { User, Session } from '@supabase/supabase-js'
 
 import { createClient } from '@/configs/supabase'
 
 interface AuthContextType {
   user: User | null
+  session: Session | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
@@ -22,96 +21,112 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
-    const { auth } = supabase
+    const initializeAuth = async () => {
+      setLoading(true)
 
-    // Check active sessions and sets the user
-    auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      try {
+        const {
+          data: { session: initialSession }
+        } = await supabase.auth.getSession()
 
-      if (session) {
-        router.push('/home')
-      } else {
-        router.push('/')
+        setSession(initialSession)
+        setUser(initialSession?.user ?? null)
+
+        const {
+          data: { subscription }
+        } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+          setSession(newSession)
+          setUser(newSession?.user ?? null)
+
+          if (event === 'SIGNED_IN') {
+            router.push('/home')
+          } else if (event === 'SIGNED_OUT') {
+            router.push('/')
+          }
+        })
+
+        return () => subscription.unsubscribe()
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+      } finally {
+        setLoading(false)
       }
+    }
 
-      setLoading(false)
-    })
-
-    // Listen for changes on auth state (logged in, signed out, etc.)
-    const {
-      data: { subscription }
-    } = auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-
-      if (session) {
-        router.push('/home')
-      } else {
-        router.push('/')
-      }
-
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    initializeAuth()
   }, [router, supabase])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
+    setLoading(true)
 
-    if (error) throw error
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+      if (error) throw error
+    } finally {
+      setLoading(false)
+    }
   }
 
   const signUp = async (email: string, password: string) => {
-    // For signup redirect, we will explicitly use the production URL
-    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
+    setLoading(true)
 
-    console.log('Using redirect URL:', redirectUrl) // For debugging
+    try {
+      const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || window?.location.origin
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${redirectUrl}/auth/callback`
-      }
-    })
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${redirectUrl}/auth/callback`
+        }
+      })
 
-    if (error) throw error
+      if (error) throw error
+    } finally {
+      setLoading(false)
+    }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
+    setLoading(true)
 
-    if (error) throw error
+    try {
+      const { error } = await supabase.auth.signOut()
+
+      if (error) throw error
+      router.push('/')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  return <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
+  const value = {
+    user,
+    session,
+
+    loading,
+    signIn,
+
+    signUp,
+    signOut
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
   const context = useContext(AuthContext)
 
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
 
   return context
-}
-
-export const getRedirectURL = () => {
-  // Use NEXT_PUBLIC_SITE_URL in production environments
-  // If not available, use the current origin (which will be localhost in dev and the actual domain in prod)
-  if (typeof window !== 'undefined') {
-    return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-  }
-
-  // Server-side fallback
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 }

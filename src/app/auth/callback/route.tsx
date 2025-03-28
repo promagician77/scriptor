@@ -37,7 +37,5 @@ export async function GET(request: Request) {
   // Determine the appropriate redirect URL based on environment and request
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
 
-  console.log('Using redirect URL:', siteUrl) // For debugging
-
   return NextResponse.redirect(`${siteUrl}/home`)
 }
