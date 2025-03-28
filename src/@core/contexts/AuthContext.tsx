@@ -71,13 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     // For signup redirect, we will explicitly use the production URL
-    const redirectUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      (process.env.NODE_ENV === 'production'
-        ? 'https://scriptor-kappa.vercel.app'
-        : typeof window !== 'undefined'
-          ? window.location.origin
-          : 'http://localhost:3000')
+    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
 
     console.log('Using redirect URL:', redirectUrl) // For debugging
 
