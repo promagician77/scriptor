@@ -82,7 +82,7 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error('Middleware error:', error)
 
-    // Fallback response in case of errors
+    // Fallback response in case of error
     return response
   }
 }
