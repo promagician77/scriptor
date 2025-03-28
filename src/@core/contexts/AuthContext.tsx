@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+        emailRedirectTo: `${getRedirectURL()}/auth/callback`
       }
     })
 
@@ -98,4 +98,10 @@ export function useAuth() {
   }
 
   return context
+}
+
+export const getRedirectURL = () => {
+  // In development, use localhost
+  // In production, use NEXT_PUBLIC_SITE_URL
+  return process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_SITE_URL : 'http://localhost:3000'
 }
