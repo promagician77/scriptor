@@ -34,13 +34,14 @@ const LogoText = styled.span<LogoTextProps>`
   line-height: 1;
   font-weight: 700;
   letter-spacing: 0.15px;
+  font-style: italic;
   transition: ${({ transitionDuration }) =>
     `margin-inline-start ${transitionDuration}ms ease-in-out, opacity ${transitionDuration}ms ease-in-out`};
 
   ${({ isHovered, isCollapsed, isBreakpointReached }) =>
     !isBreakpointReached && isCollapsed && !isHovered
       ? 'opacity: 0; margin-inline-start: 0;'
-      : 'opacity: 1; margin-inline-start: 8px;'}
+      : 'opacity: 1; margin-inline-start: 12px;'}
 `
 
 const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
@@ -71,7 +72,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
 
   return (
     <div className='flex items-center'>
-      <SneatLogo className='text-2xl text-primary' />
+      <SneatLogo className='text-[#2C7DA0]' style={{ width: '2.5rem', height: '2.5rem' }} />
       <LogoText
         color={color}
         ref={logoTextRef}
