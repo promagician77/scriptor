@@ -241,10 +241,10 @@ const ProjectManager = ({ mode, projectId }: ProjectManagerProps) => {
             )}
             <Button
               variant='tonal'
-              color='secondary'
+              color='error'
               startIcon={<i className='bx-arrow-back' />}
               onClick={() => router.push('/home')}
-              className='mie-2'
+              className='ml-2'
             >
               Back
             </Button>

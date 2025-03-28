@@ -194,20 +194,6 @@ const Login = () => {
               </Typography>
             </div>
             <Divider className='gap-2 text-textPrimary'>or</Divider>
-            <div className='flex justify-center items-center gap-1.5'>
-              <IconButton className='text-facebook' size='small' disabled={isLoading}>
-                <i className='bx-bxl-facebook-circle' />
-              </IconButton>
-              <IconButton className='text-twitter' size='small' disabled={isLoading}>
-                <i className='bx-bxl-twitter' />
-              </IconButton>
-              <IconButton className='text-textPrimary' size='small' disabled={isLoading}>
-                <i className='bx-bxl-github' />
-              </IconButton>
-              <IconButton className='text-error' size='small' disabled={isLoading}>
-                <i className='bx-bxl-google' />
-              </IconButton>
-            </div>
           </form>
         </CardContent>
       </Card>
