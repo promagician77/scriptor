@@ -17,7 +17,7 @@ export default function page() {
               Login
             </Link>
             <Link
-              href='/signup'
+              href='/register'
               className='bg-transparent hover:bg-white/20 text-white border border-white/80 rounded-full px-7 py-2.5 transition-all text-sm font-medium'
             >
               Sign Up
