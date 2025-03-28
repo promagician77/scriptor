@@ -70,11 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string) => {
+    // Get the correct redirect URL for the current environment
+    const redirectUrl = getRedirectURL()
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${getRedirectURL()}/auth/callback`
+        emailRedirectTo: `${redirectUrl}/auth/callback`
       }
     })
 
@@ -101,7 +104,12 @@ export function useAuth() {
 }
 
 export const getRedirectURL = () => {
-  // In development, use localhost
-  // In production, use NEXT_PUBLIC_SITE_URL
-  return process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_SITE_URL : 'http://localhost:3000'
+  // Use NEXT_PUBLIC_SITE_URL in production environments
+  // If not available, use the current origin (which will be localhost in dev and the actual domain in prod)
+  if (typeof window !== 'undefined') {
+    return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+  }
+
+  // Server-side fallback
+  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 }

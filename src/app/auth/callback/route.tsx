@@ -4,11 +4,10 @@ import { NextResponse } from 'next/server'
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-import { getRedirectURL } from '@core/contexts/AuthContext'
+// We'll implement our own server-side redirect logic
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
-
   const code = requestUrl.searchParams.get('code')
 
   if (code) {
@@ -33,12 +32,11 @@ export async function GET(request: Request) {
     )
 
     // Exchange the code for a session
-
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // URL to redirect to after sign in process completes - using our utility function
-  const siteUrl = getRedirectURL()
+  // Determine the appropriate redirect URL based on environment and request
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
 
   return NextResponse.redirect(`${siteUrl}/home`)
 }
