@@ -34,8 +34,5 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // Determine the appropriate redirect URL based on environment and request
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-
-  return NextResponse.redirect(`${siteUrl}/home`)
+  return NextResponse.redirect(new URL('/home', requestUrl.origin))
 }
