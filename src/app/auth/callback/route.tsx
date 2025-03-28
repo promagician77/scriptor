@@ -1,14 +1,19 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+
 import { NextResponse } from 'next/server'
+
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+
 import { getRedirectURL } from '@core/contexts/AuthContext'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
+
   const code = requestUrl.searchParams.get('code')
 
   if (code) {
     const cookieStore = cookies()
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -28,10 +33,12 @@ export async function GET(request: Request) {
     )
 
     // Exchange the code for a session
+
     await supabase.auth.exchangeCodeForSession(code)
   }
 
   // URL to redirect to after sign in process completes - using our utility function
   const siteUrl = getRedirectURL()
+
   return NextResponse.redirect(`${siteUrl}/home`)
 }
