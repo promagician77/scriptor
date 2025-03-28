@@ -1,6 +1,8 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+
 import { NextResponse } from 'next/server'
+
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -8,6 +10,7 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = cookies()
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -31,6 +34,8 @@ export async function GET(request: Request) {
   }
 
   // URL to redirect to after sign in process completes
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
   return NextResponse.redirect(`${siteUrl}/home`)
 }
