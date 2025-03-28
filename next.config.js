@@ -13,11 +13,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: '/auth/callback',
-        destination: '/',
-        permanent: true
-      }
+      // Removed the /auth/callback redirect as we now have a proper route handler
     ]
   }
 }
